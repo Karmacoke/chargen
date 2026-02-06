@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Karmacoke/chargen.git/static/css/main.e1112212.css",
+    "main.js": "/Karmacoke/chargen.git/static/js/main.de912499.js",
+    "index.html": "/Karmacoke/chargen.git/index.html",
+    "main.e1112212.css.map": "/Karmacoke/chargen.git/static/css/main.e1112212.css.map",
+    "main.de912499.js.map": "/Karmacoke/chargen.git/static/js/main.de912499.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e1112212.css",
+    "static/js/main.de912499.js"
+  ]
+}

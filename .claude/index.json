@@ -1,0 +1,189 @@
+{
+  "metadata": {
+    "project_name": "my-chargen",
+    "description": "AI-powered character generator for game developers, writers, and TRPG players",
+    "last_scan": "2026-02-05T03:24:04.000Z",
+    "scan_version": "1.0.0",
+    "languages": ["JavaScript", "JSX", "CSS", "HTML", "JSON"],
+    "primary_language": "JavaScript",
+    "total_files_detected": 13,
+    "scanned_files": 13,
+    "ignored_files": "~2000+ (node_modules)",
+    "coverage_percentage": 100
+  },
+
+  "modules": [
+    {
+      "name": "src",
+      "path": "src/",
+      "type": "react_application",
+      "language": "JavaScript/JSX",
+      "entry_points": ["index.js"],
+      "main_components": ["CharacterGenerator.jsx"],
+      "test_directory": "src/",
+      "test_files": ["App.test.js", "setupTests.js"],
+      "config_files": [],
+      "dependencies": {
+        "external": ["react", "react-dom", "@testing-library/react"],
+        "internal": ["index.css"]
+      },
+      "public_interfaces": [
+        {
+          "type": "user_interface",
+          "description": "Web-based character generation form with multi-language support"
+        },
+        {
+          "type": "api_consumer",
+          "providers": ["Google Gemini", "OpenAI/DeepSeek", "Ollama"],
+          "protocols": ["HTTP POST"]
+        }
+      ],
+      "data_models": [
+        "CharacterData (identity, appearance, psychology, background)",
+        "AppConfig (provider, apiKey, baseUrl, model)"
+      ],
+      "coverage": {
+        "has_entry": true,
+        "has_tests": true,
+        "has_interfaces": true,
+        "has_data_models": true,
+        "missing": ["Component-level unit tests", "API adapter tests"]
+      }
+    },
+
+    {
+      "name": "public",
+      "path": "public/",
+      "type": "static_assets",
+      "language": "HTML/JSON",
+      "entry_points": ["index.html"],
+      "main_components": [],
+      "test_directory": null,
+      "test_files": [],
+      "config_files": ["manifest.json"],
+      "dependencies": {
+        "external": [],
+        "internal": []
+      },
+      "public_interfaces": [
+        {
+          "type": "html_template",
+          "description": "React app mount point and PWA configuration"
+        }
+      ],
+      "data_models": [],
+      "coverage": {
+        "has_entry": true,
+        "has_tests": false,
+        "has_interfaces": true,
+        "has_data_models": false,
+        "missing": []
+      }
+    },
+
+    {
+      "name": "root_config",
+      "path": "./",
+      "type": "build_configuration",
+      "language": "JavaScript/JSON",
+      "entry_points": ["package.json"],
+      "main_components": [],
+      "test_directory": null,
+      "test_files": [],
+      "config_files": [
+        "package.json",
+        "tailwind.config.js",
+        "postcss.config.js",
+        ".gitignore"
+      ],
+      "dependencies": {
+        "external": ["react-scripts", "tailwindcss", "autoprefixer"],
+        "internal": []
+      },
+      "public_interfaces": [
+        {
+          "type": "npm_scripts",
+          "commands": ["start", "build", "test", "eject"]
+        }
+      ],
+      "data_models": [],
+      "coverage": {
+        "has_entry": true,
+        "has_tests": false,
+        "has_interfaces": true,
+        "has_data_models": false,
+        "missing": []
+      }
+    }
+  ],
+
+  "architecture_insights": {
+    "pattern": "Single Page Application (SPA)",
+    "framework": "React 19 with Create React App",
+    "state_management": "React Hooks + localStorage",
+    "styling_approach": "Tailwind CSS utility-first",
+    "api_strategy": "Direct third-party API calls (no backend)",
+    "i18n_strategy": "In-component translation dictionaries",
+    "testing_framework": "Jest + React Testing Library"
+  },
+
+  "ignore_rules": {
+    "source": ".gitignore",
+    "patterns": [
+      "node_modules/**",
+      ".pnp",
+      ".pnp.js",
+      "coverage/**",
+      "build/**",
+      ".DS_Store",
+      ".env.local",
+      ".env.development.local",
+      ".env.test.local",
+      ".env.production.local",
+      "npm-debug.log*",
+      "yarn-debug.log*",
+      "yarn-error.log*"
+    ],
+    "ignored_directories_count": 1,
+    "ignored_files_count": "~2000+"
+  },
+
+  "coverage_report": {
+    "total_source_files": 8,
+    "scanned_source_files": 8,
+    "percentage": 100,
+    "gaps": [
+      {
+        "module": "src",
+        "missing": "Unit tests for CharacterGenerator.jsx (1160 lines, 0% test coverage)",
+        "priority": "high"
+      },
+      {
+        "module": "src",
+        "missing": "API adapter integration tests",
+        "priority": "high"
+      },
+      {
+        "module": "src",
+        "missing": "Internationalization (i18n) tests for 7 languages",
+        "priority": "medium"
+      },
+      {
+        "module": "src",
+        "missing": "index.css content (not read in this scan)",
+        "priority": "low"
+      }
+    ]
+  },
+
+  "next_steps": {
+    "priority_1": "Write unit tests for CharacterGenerator component (estimated 200-300 lines of tests)",
+    "priority_2": "Refactor CharacterGenerator.jsx into smaller components (InputForm, ResultDisplay, SettingsPanel)",
+    "priority_3": "Add E2E tests using Cypress or Playwright for critical user flows",
+    "priority_4": "Document API response schemas in TypeScript interfaces",
+    "priority_5": "Add error boundary component for better error handling"
+  },
+
+  "truncated": false,
+  "scan_notes": "Full scan completed successfully. All source files analyzed. node_modules ignored as per .gitignore rules."
+}
