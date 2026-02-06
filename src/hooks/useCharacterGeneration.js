@@ -30,7 +30,7 @@ export const useCharacterGeneration = () => {
     provider: 'gemini',
     apiKey: '',
     baseUrl: '',
-    model: 'gemini-1.5-flash'
+    model: 'gemini-2.5-flash'
   });
 
   const [testStatus, setTestStatus] = useState(null); // 'testing' | 'success' | 'fail' | null

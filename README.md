@@ -42,21 +42,10 @@ OpenAI / ChatGPT (支持 gpt-4o, gpt-3.5 等)
 
 🌍 多语言界面：支持简中、英语、日语、韩语等多种语言切换。
 
-# 🛠️ 技术栈
-
-框架：React (Hooks)
-
-脚手架：Create React App
-
-样式：Tailwind CSS (响应式设计，暗黑模式)
-
-图标：Lucide React
-
-API 交互：Fetch API (Streamless)
-
 # 🚀 快速开始
 
-### 可直接访问本项目在Github上部署的地址： [https://karmacoke.github.io/chargen/](https://karmacoke.github.io/chargen/) 立即开始设计你的角色
+### 可直接访问本项目在Github上部署的地址：
+ [https://karmacoke.github.io/chargen/](https://karmacoke.github.io/chargen/) 立即开始设计你的角色
 
 ## 本地运行
 
@@ -116,7 +105,10 @@ npm start
 
 # ⚙️ 配置指南
 
-点击界面右上角的 齿轮图标 ⚙️ 进行模型配置。
+![API Key设置面板](./assets/SettingsPanel.png)
+
+### 必读：
+** 开始生成角色之前请点击界面右上角的 齿轮图标 ⚙️ 进行模型配置。**
 
 1. 使用 Google Gemini (推荐)
 
@@ -124,7 +116,7 @@ npm start
 
 在 API Key 框中输入以 AIza 开头API Key。
 
-无需填写 Base URL。
+在 模型名称 栏填入对应的模型名称（如：gemini-2.5-flash）。
 
 2. 使用 OpenAI
 
@@ -132,7 +124,7 @@ npm start
 
 在 API Key 框中输入以 sk- 开头API Key。
 
-程序会自动识别并切换到 OpenAI 模式。
+在 模型名称 栏填入对应的模型名称
 
 3. 使用 DeepSeek / Kimi / 其他模型
 
@@ -140,7 +132,7 @@ npm start
 
 在 API Key 框中输入 API Key（通常也是 sk- 开头）。
 
-在 模型名称 栏填入对应的模型 ID (如 deepseek-chat)。
+在 模型名称 栏填入对应的模型名称 (如 deepseek-chat)。
 
 4. 使用本地 Ollama
 
@@ -149,6 +141,19 @@ npm start
 确保本地已运行 ollama run deepseek-r1 (或其他模型)。
 
 默认地址为 http://localhost:11434。
+
+# 🛠️ 技术栈
+
+框架：React (Hooks)
+
+脚手架：Create React App
+
+样式：Tailwind CSS (响应式设计，暗黑模式)
+
+图标：Lucide React
+
+API 交互：Fetch API (Streamless)
+
 
 # 🤝 贡献 (Contributing)
 
