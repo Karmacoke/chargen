@@ -1,70 +1,155 @@
-# Getting Started with Create React App
+# 🎭 CharGen - AI 角色生成器
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+"输入灵感碎片，锻造完整灵魂。"
 
-## Available Scripts
+CharGen 是一个基于 React 和 AI 大模型（LLM）的智能角色生成工具。它专为小说家、游戏开发者、TRPG (跑团) 玩家和角色扮演爱好者设计。只需提供简单的关键词或选择世界观，AI 就能为你生成一个有血有肉、细节丰富的角色档案。
 
-In the project directory, you can run:
+(建议替换为你的项目实际截图，将截图放入项目文件夹后修改此处链接)
 
-### `npm start`
+# ✨ 功能亮点
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+🧠 多模型支持：
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Google Gemini (原生支持，自动识别 AIza 开头 Key)
 
-### `npm test`
+OpenAI / ChatGPT (支持 gpt-4o, gpt-3.5 等)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+国产大模型 (DeepSeek、Kimi、通义千问等，通过兼容模式支持)
 
-### `npm run build`
+本地模型 (Ollama，无需联网，隐私安全)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+🎲 双重模式：
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+定制模式：指定世界观、职业、性别和关键词，精准定制。
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+完全随机：一键生成，寻找意外的灵感。
 
-### `npm run eject`
+📝 深度设定生成：
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+基础档案：姓名、年龄、种族、阵营、职业。
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+心理侧写：MBTI 人格、核心欲望、恐惧、致命弱点。
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+背景故事：详实的生平经历与不可告人的秘密。
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+🤖 NPC 专属指令 (System Prompt)：
 
-## Learn More
+自动生成一段能够直接复制到 AI 对话（如 ChatGPT）中的 System Prompt，让 AI 立刻扮演该角色与你对话。
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+🎨 绘图咒语 (Image Prompt)：
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+自动生成适配 Stable Diffusion 或 Midjourney 的英文绘画提示词。
 
-### Code Splitting
+🌍 多语言界面：支持简中、英语、日语、韩语等多种语言切换。
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+# 🛠️ 技术栈
 
-### Analyzing the Bundle Size
+框架：React (Hooks)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+脚手架：Create React App
 
-### Making a Progressive Web App
+样式：Tailwind CSS (响应式设计，暗黑模式)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+图标：Lucide React
 
-### Advanced Configuration
+API 交互：Fetch API (Streamless)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+# 🚀 快速开始 (本地运行)
 
-### Deployment
+想要在你的电脑上运行这个项目？请根据你的操作系统选择对应的方案：
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. 环境准备 (所有系统)
 
-### `npm run build` fails to minify
+确保你的电脑上已经安装了以下基础软件：
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Node.js (推荐下载 LTS 版本)
+
+Git (用于下载代码)
+
+### 🍎 方案 A：macOS 用户
+
+打开终端：按 Command + Space (空格键)，输入 Terminal 并回车。
+
+下载代码：
+
+git clone [https://github.com/你的用户名/my-chargen.git](https://github.com/你的用户名/my-chargen.git)
+
+
+进入目录并安装依赖：
+
+cd my-chargen
+npm install
+
+
+启动项目：
+
+npm start
+
+
+### 🪟 方案 B：Windows 用户
+
+打开命令行：按 Win + R 键，输入 cmd 或 powershell，然后点击确定。
+
+下载代码：
+
+git clone [https://github.com/你的用户名/my-chargen.git](https://github.com/你的用户名/my-chargen.git)
+
+
+进入目录并安装依赖：
+
+cd my-chargen
+npm install
+
+
+启动项目：
+
+npm start
+
+
+启动成功后，浏览器会自动打开 http://localhost:3000，你就可以开始使用了！
+
+# ⚙️ 配置指南
+
+点击界面右上角的 齿轮图标 ⚙️ 进行模型配置。
+
+1. 使用 Google Gemini (推荐)
+
+在 API Key 框中输入以 AIza 开头的密钥。
+
+程序会自动识别并切换到 Gemini 模式。
+
+无需填写 Base URL。
+
+2. 使用 OpenAI
+
+在 API Key 框中输入以 sk- 开头的密钥。
+
+程序会自动识别并切换到 OpenAI 模式。
+
+3. 使用 DeepSeek / Kimi / 其他国产模型
+
+在 API Key 框中输入密钥（通常也是 sk- 开头）。
+
+必须在 Base URL (代理地址) 栏中填入厂商提供的 API 地址：
+
+DeepSeek: https://api.deepseek.com
+
+Kimi (Moonshot): https://api.moonshot.cn/v1
+
+在 模型名称 栏填入对应的模型 ID (如 deepseek-chat)。
+
+4. 使用本地 Ollama
+
+将 AI 提供商 选为 Local Ollama。
+
+确保本地已运行 ollama run deepseek-r1 (或其他模型)。
+
+默认地址为 http://localhost:11434。
+
+# 🤝 贡献 (Contributing)
+
+欢迎提交 Issue 或 Pull Request！如果你有更好的 Prompt 优化建议或新功能想法，请随时告诉我。
+
+# 📄 许可证 (License)
+
+本项目基于 MIT License 开源。这意味着你可以免费使用、修改和分发代码。
