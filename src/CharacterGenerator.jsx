@@ -18,6 +18,7 @@ const CharacterGenerator = () => {
     lang,
     mode,
     worldSettingKey,
+    customWorldSetting,
     role,
     gender,
     keywords,
@@ -28,6 +29,7 @@ const CharacterGenerator = () => {
     testStatus,
     setMode,
     setWorldSettingKey,
+    setCustomWorldSetting,
     setRole,
     setGender,
     setKeywords,
@@ -194,6 +196,8 @@ const CharacterGenerator = () => {
             setMode={setMode}
             worldSettingKey={worldSettingKey}
             setWorldSettingKey={setWorldSettingKey}
+            customWorldSetting={customWorldSetting}
+            setCustomWorldSetting={setCustomWorldSetting}
             role={role}
             setRole={setRole}
             gender={gender}

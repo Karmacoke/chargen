@@ -3,7 +3,7 @@
  * 职责：处理用户输入（模式切换、世界观选择、角色信息）
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Fingerprint, Dices } from './Icons';
 
 const InputForm = ({
@@ -11,6 +11,8 @@ const InputForm = ({
   setMode,
   worldSettingKey,
   setWorldSettingKey,
+  customWorldSetting,
+  setCustomWorldSetting,
   role,
   setRole,
   gender,
@@ -62,7 +64,19 @@ const InputForm = ({
               {Object.entries(translations[lang].worldOptions).map(([key, label]) => (
                 <option key={key} value={key}>{label}</option>
               ))}
+              <option value="__custom__">✏️ {t('worldOptionCustom')}</option>
             </select>
+
+            {/* 自定义世界观输入框 */}
+            {worldSettingKey === '__custom__' && (
+              <input
+                type="text"
+                placeholder={t('placeholderCustomWorld')}
+                value={customWorldSetting || ''}
+                onChange={(e) => setCustomWorldSetting(e.target.value)}
+                className="w-full mt-2 bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+              />
+            )}
           </div>
 
           {/* 角色/性别输入 */}

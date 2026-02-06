@@ -16,6 +16,7 @@ export const useCharacterGeneration = () => {
   // === 用户输入状态 ===
   const [mode, setMode] = useState('custom');
   const [worldSettingKey, setWorldSettingKey] = useState('fantasy');
+  const [customWorldSetting, setCustomWorldSetting] = useState('');
   const [role, setRole] = useState('');
   const [gender, setGender] = useState('');
   const [keywords, setKeywords] = useState('');
@@ -96,7 +97,10 @@ export const useCharacterGeneration = () => {
     setError('');
     setResult(null);
 
-    const currentWorldSetting = translations[lang].worldOptions[worldSettingKey];
+    // 使用自定义世界观或预设世界观
+    const currentWorldSetting = worldSettingKey === '__custom__'
+      ? customWorldSetting
+      : translations[lang].worldOptions[worldSettingKey];
     const targetLanguageName = translations[lang].langName;
 
     const userPrompt = buildUserPrompt({
@@ -164,6 +168,7 @@ export const useCharacterGeneration = () => {
     lang,
     mode,
     worldSettingKey,
+    customWorldSetting,
     role,
     gender,
     keywords,
@@ -176,6 +181,7 @@ export const useCharacterGeneration = () => {
     // 方法
     setMode,
     setWorldSettingKey,
+    setCustomWorldSetting,
     setRole,
     setGender,
     setKeywords,

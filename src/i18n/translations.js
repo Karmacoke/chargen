@@ -56,6 +56,8 @@ export const translations = {
     statusConnected: "连接成功",
     statusFailed: "连接失败",
     statusTesting: "测试中...",
+    worldOptionCustom: "其他 (手动输入)",
+    placeholderCustomWorld: "例：蒸汽朋克+克苏鲁、校园日常、古罗马竞技场...",
     worldOptions: {
       fantasy: "奇异 (Fantasy) - 剑与魔法，龙与地下城",
       cyberpunk: "赛博朋克 (Cyberpunk) - 高科技低生活",
@@ -122,6 +124,8 @@ export const translations = {
     statusConnected: "Connected",
     statusFailed: "Failed",
     statusTesting: "Testing...",
+    worldOptionCustom: "Other (Manual Input)",
+    placeholderCustomWorld: "e.g. Steampunk + Lovecraft, School Life, Ancient Rome...",
     worldOptions: {
       fantasy: "Fantasy - Sword & Magic, D&D",
       cyberpunk: "Cyberpunk - High Tech Low Life",
@@ -188,6 +192,8 @@ export const translations = {
     statusConnected: "Conectado",
     statusFailed: "Fallido",
     statusTesting: "Probando...",
+    worldOptionCustom: "Otro (Entrada manual)",
+    placeholderCustomWorld: "ej. Steampunk + Lovecraft, Vida escolar, Roma antigua...",
     worldOptions: {
       fantasy: "Fantasía - Espada y Hechicería",
       cyberpunk: "Cyberpunk - Alta tecnología, baja vida",
@@ -254,7 +260,8 @@ export const translations = {
     statusConnected: "Connecté",
     statusFailed: "Échec",
     statusTesting: "Test...",
-    statusTesting: "Test...",
+    worldOptionCustom: "Autre (Saisie manuelle)",
+    placeholderCustomWorld: "ex. Steampunk + Lovecraft, Vie scolaire, Rome antique...",
     worldOptions: {
       fantasy: "Fantasy - Épée et Magie",
       cyberpunk: "Cyberpunk - High Tech Low Life",
@@ -321,6 +328,8 @@ export const translations = {
     statusConnected: "Успешно",
     statusFailed: "Ошибка",
     statusTesting: "Тест...",
+    worldOptionCustom: "Другое (Ручной ввод)",
+    placeholderCustomWorld: "напр. Стимпанк + Лавкрафт, Школьная жизнь, Древний Рим...",
     worldOptions: {
       fantasy: "Фэнтези - Меч и Магия",
       cyberpunk: "Киберпанк - Хай-тек",
@@ -387,6 +396,8 @@ export const translations = {
     statusConnected: "接続成功",
     statusFailed: "接続失敗",
     statusTesting: "テスト中...",
+    worldOptionCustom: "その他 (手動入力)",
+    placeholderCustomWorld: "例：スチームパンク+クトゥルフ、学園日常、古代ローマ...",
     worldOptions: {
       fantasy: "ファンタジー - 剣と魔法",
       cyberpunk: "サイバーパンク - ハイテク・ローライフ",
@@ -453,6 +464,8 @@ export const translations = {
     statusConnected: "연결 성공",
     statusFailed: "연결 실패",
     statusTesting: "테스트 중...",
+    worldOptionCustom: "기타 (직접 입력)",
+    placeholderCustomWorld: "예: 스팀펑크+러브크래프트, 학원 일상, 고대 로마...",
     worldOptions: {
       fantasy: "판타지 - 검과 마법",
       cyberpunk: "사이버펑크 - 하이테크 로우라이프",
