@@ -1,0 +1,177 @@
+/**
+ * 结果展示组件
+ * 职责：展示生成的角色数据（4 个 Tab：角色卡、NPC 指令、绘图咒语、JSON）
+ */
+
+import React, { useState } from 'react';
+import { User, BookOpen, MessageSquare, Palette, Terminal, History, Brain, Check, Copy } from './Icons';
+import { copyToClipboard } from '../utils/helpers';
+
+const ResultDisplay = ({ result, isLoading, config, translations, lang }) => {
+  const [activeTab, setActiveTab] = useState('card');
+  const [copyFeedback, setCopyFeedback] = useState('');
+
+  const t = (key) => translations[lang]?.[key] || key;
+
+  const handleCopy = (text, type) => {
+    const success = copyToClipboard(text);
+    if (success) {
+      setCopyFeedback(type);
+      setTimeout(() => setCopyFeedback(''), 2000);
+    }
+  };
+
+  // 状态1：等待输入
+  if (!result && !isLoading) {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500 p-8 text-center">
+        <div className="w-24 h-24 bg-gray-900 rounded-full flex items-center justify-center mb-4 ring-1 ring-gray-700">
+          <User className="w-10 h-10 opacity-50" />
+        </div>
+        <h3 className="text-xl font-medium text-gray-300">{t('waitingTitle')}</h3>
+        <p className="max-w-xs mt-2 text-sm">{t('waitingDesc')}</p>
+      </div>
+    );
+  }
+
+  // 状态2：加载中
+  if (isLoading) {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-800/90 z-10 backdrop-blur-sm">
+        <div className="w-16 h-16 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mb-6"></div>
+        <p className="text-indigo-300 font-mono animate-pulse">{t('loadingText')}</p>
+        <p className="text-xs text-gray-500 mt-2">{t('loadingProvider')} {config.provider}</p>
+      </div>
+    );
+  }
+
+  // 状态3：结果展示
+  return (
+    <>
+      {/* Tab 导航 */}
+      <div className="flex border-b border-gray-700 bg-gray-900/50 overflow-x-auto">
+        <button onClick={() => setActiveTab('card')} className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${activeTab === 'card' ? 'border-indigo-500 text-indigo-400 bg-gray-800' : 'border-transparent text-gray-400 hover:text-white'}`}>
+          <BookOpen className="w-4 h-4" /> {t('tabCard')}
+        </button>
+        <button onClick={() => setActiveTab('sysprompt')} className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${activeTab === 'sysprompt' ? 'border-yellow-500 text-yellow-400 bg-gray-800' : 'border-transparent text-gray-400 hover:text-white'}`}>
+          <MessageSquare className="w-4 h-4" /> {t('tabSysPrompt')}
+        </button>
+        <button onClick={() => setActiveTab('prompt')} className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${activeTab === 'prompt' ? 'border-pink-500 text-pink-400 bg-gray-800' : 'border-transparent text-gray-400 hover:text-white'}`}>
+          <Palette className="w-4 h-4" /> {t('tabPrompt')}
+        </button>
+        <button onClick={() => setActiveTab('json')} className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${activeTab === 'json' ? 'border-emerald-500 text-emerald-400 bg-gray-800' : 'border-transparent text-gray-400 hover:text-white'}`}>
+          <Terminal className="w-4 h-4" /> {t('tabJson')}
+        </button>
+      </div>
+
+      {/* Tab 内容 */}
+      <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
+        {/* 角色卡片 */}
+        {activeTab === 'card' && (
+          <div className="space-y-8 animate-fadeIn">
+            <div className="flex flex-col md:flex-row gap-6 items-start border-b border-gray-700 pb-6">
+              <div className="flex-1">
+                <div className="flex items-baseline gap-3 mb-2">
+                  <h2 className="text-3xl font-bold text-white">{result.identity.name}</h2>
+                  {result.identity.aliases && <span className="text-indigo-400 italic font-medium">"{result.identity.aliases}"</span>}
+                </div>
+                <div className="flex flex-wrap gap-2 text-sm text-gray-300">
+                  <span className="bg-gray-700 px-2 py-1 rounded">{result.identity.race}</span>
+                  <span className="bg-gray-700 px-2 py-1 rounded">{result.identity.gender}</span>
+                  <span className="bg-gray-700 px-2 py-1 rounded">{result.identity.age}</span>
+                  <span className="bg-indigo-900/50 text-indigo-200 px-2 py-1 rounded border border-indigo-700/50">{result.identity.occupation}</span>
+                  <span className="bg-gray-700 px-2 py-1 rounded">{result.identity.alignment}</span>
+                </div>
+              </div>
+              <div className="w-full md:w-1/3 bg-gray-900/50 p-4 rounded-lg border border-gray-700">
+                <h4 className="text-xs font-bold text-gray-500 uppercase mb-3 flex items-center gap-2">
+                  <Brain className="w-3 h-3" /> {t('secPsychology')}
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between"><span className="text-gray-400">{t('labelMbti')}</span><span className="text-yellow-400 font-mono">{result.psychology.mbti}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-400">{t('labelDesire')}</span><span className="text-gray-200 text-right w-2/3 truncate">{result.psychology.desire}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-400">{t('labelFear')}</span><span className="text-gray-200 text-right w-2/3 truncate">{result.psychology.fear}</span></div>
+                </div>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <h3 className="text-lg font-bold text-pink-400 flex items-center gap-2"><User className="w-5 h-5" /> {t('secAppearance')}</h3>
+                <p className="text-gray-300 leading-relaxed text-sm">{result.appearance.summary}</p>
+                <ul className="space-y-2 mt-2">{result.appearance.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-sm text-gray-400">
+                    <span className="w-1.5 h-1.5 mt-1.5 rounded-full bg-pink-500 flex-shrink-0"></span>{feature}
+                  </li>
+                ))}</ul>
+              </div>
+              <div className="space-y-4">
+                <h3 className="text-lg font-bold text-indigo-400 flex items-center gap-2"><History className="w-5 h-5" /> {t('secBackground')}</h3>
+                <div className="bg-gray-900/30 p-4 rounded-lg border-l-2 border-indigo-500"><p className="text-gray-300 leading-relaxed text-sm italic">{result.background.story_summary}</p></div>
+                <div className="pt-2"><h4 className="text-xs font-bold text-red-400 uppercase mb-2">{t('labelSecret')}</h4><p className="text-sm text-gray-400 bg-red-900/10 p-2 rounded border border-red-900/30">{result.background.secret}</p></div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* NPC 指令 */}
+        {activeTab === 'sysprompt' && (
+          <div className="animate-fadeIn space-y-6">
+            <div className="bg-gray-900 p-6 rounded-xl border border-gray-700 relative group">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">{t('labelSysPrompt')}</h3>
+                <button onClick={() => handleCopy(result.system_prompt || "", 'sysprompt')} className="text-xs flex items-center gap-1 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded transition-colors border border-gray-600">
+                  {copyFeedback === 'sysprompt' ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+                  {copyFeedback === 'sysprompt' ? t('btnCopied') : t('btnCopy')}
+                </button>
+              </div>
+              <div className="font-mono text-sm text-yellow-300 leading-relaxed whitespace-pre-wrap bg-black/30 p-4 rounded-lg border-l-4 border-yellow-500">{result.system_prompt || "生成失败"}</div>
+            </div>
+            <div className="bg-yellow-900/10 p-4 rounded-lg border border-yellow-800/30 flex gap-3">
+              <div className="flex-shrink-0 mt-1"><MessageSquare className="w-5 h-5 text-yellow-500" /></div>
+              <div>
+                <h4 className="text-sm font-bold text-yellow-400 mb-1">{t('labelDevGuide')}</h4>
+                <p className="text-xs text-gray-400">{t('textDevGuide')}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 绘图 Prompt */}
+        {activeTab === 'prompt' && (
+          <div className="animate-fadeIn space-y-6">
+            <div className="bg-gray-900 p-6 rounded-xl border border-gray-700">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">{t('labelImgPrompt')}</h3>
+                <button onClick={() => handleCopy(result.image_prompt, 'prompt')} className="text-xs flex items-center gap-1 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded transition-colors border border-gray-600">
+                  {copyFeedback === 'prompt' ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+                  {copyFeedback === 'prompt' ? t('btnCopied') : t('btnCopy')}
+                </button>
+              </div>
+              <p className="font-mono text-sm text-pink-300 leading-relaxed break-words bg-black/30 p-4 rounded-lg">{result.image_prompt}</p>
+            </div>
+            <div className="bg-blue-900/20 p-4 rounded-lg border border-blue-800/30 flex gap-3">
+              <div className="flex-shrink-0 mt-1"><Palette className="w-5 h-5 text-blue-400" /></div>
+              <div><h4 className="text-sm font-bold text-blue-300 mb-1">{t('labelDevGuide')}</h4><p className="text-xs text-gray-400">{t('textImgGuide')}</p></div>
+            </div>
+          </div>
+        )}
+
+        {/* JSON Data */}
+        {activeTab === 'json' && (
+          <div className="animate-fadeIn h-full flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">{t('labelRawJson')}</h3>
+              <button onClick={() => handleCopy(JSON.stringify(result, null, 2), 'json')} className="text-xs flex items-center gap-1 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded transition-colors border border-gray-600">
+                {copyFeedback === 'json' ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+                {copyFeedback === 'json' ? t('btnCopied') : t('btnCopy')}
+              </button>
+            </div>
+            <pre className="bg-gray-950 p-4 rounded-lg text-emerald-400 font-mono text-xs overflow-auto custom-scrollbar flex-1 border border-gray-800">{JSON.stringify(result, null, 2)}</pre>
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
+
+export default ResultDisplay;
