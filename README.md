@@ -2,7 +2,7 @@
 
 "输入灵感碎片，锻造完整灵魂。"
 
-CharGen 是一个基于 React 和 AI 大模型（LLM）的智能角色生成工具。它专为小说家、游戏开发者、TRPG (跑团) 玩家和角色扮演爱好者设计。只需提供简单的关键词或选择世界观，AI 就能为你生成一个有血有肉、细节丰富的角色档案。
+CharGen 是一个基于 React 和 AI 大模型（LLM）的智能角色生成工具。它专为作家、漫画家、角色设计师、游戏开发者、TRPG (跑团) 玩家和角色扮演爱好者设计。只需提供简单的关键词或选择世界观，AI 就能为你生成一个有血有肉、细节丰富的角色档案。
 
 ![CharGen 预览图](./assets/main-page.png)
 
@@ -38,7 +38,7 @@ OpenAI / ChatGPT (支持 gpt-4o, gpt-3.5 等)
 
 🎨 绘图咒语 (Image Prompt)：
 
-自动生成适配 Stable Diffusion 或 Midjourney 的英文绘画提示词。
+自动生成适配 Nano Banana Pro; Stable Diffusion 或 Midjourney 的英文绘画提示词。
 
 🌍 多语言界面：支持简中、英语、日语、韩语等多种语言切换。
 
@@ -54,7 +54,9 @@ OpenAI / ChatGPT (支持 gpt-4o, gpt-3.5 等)
 
 API 交互：Fetch API (Streamless)
 
-# 🚀 快速开始 (本地运行)
+# 🚀 快速开始 （可直接访问本项目在Github上部署的地址： https://karmacoke.github.io/chargen/ 立即开始设计你的角色）
+
+## 本地运行
 
 想要在你的电脑上运行这个项目？请根据你的操作系统选择对应的方案：
 
@@ -106,7 +108,9 @@ npm install
 npm start
 
 
-启动成功后，浏览器会自动打开 http://localhost:3000，你就可以开始使用了！
+启动成功后，浏览器会自动打开 http://localhost:3000
+
+你就可以开始使用了！
 
 # ⚙️ 配置指南
 
@@ -114,27 +118,25 @@ npm start
 
 1. 使用 Google Gemini (推荐)
 
-在 API Key 框中输入以 AIza 开头的密钥。
+选择Gemini模型。
 
-程序会自动识别并切换到 Gemini 模式。
+在 API Key 框中输入以 AIza 开头API Key。
 
 无需填写 Base URL。
 
 2. 使用 OpenAI
 
-在 API Key 框中输入以 sk- 开头的密钥。
+选择OpenAI模型。
+
+在 API Key 框中输入以 sk- 开头API Key。
 
 程序会自动识别并切换到 OpenAI 模式。
 
-3. 使用 DeepSeek / Kimi / 其他国产模型
+3. 使用 DeepSeek / Kimi / 其他模型
 
-在 API Key 框中输入密钥（通常也是 sk- 开头）。
+选择对应的模型。
 
-必须在 Base URL (代理地址) 栏中填入厂商提供的 API 地址：
-
-DeepSeek: https://api.deepseek.com
-
-Kimi (Moonshot): https://api.moonshot.cn/v1
+在 API Key 框中输入 API Key（通常也是 sk- 开头）。
 
 在 模型名称 栏填入对应的模型 ID (如 deepseek-chat)。
 
