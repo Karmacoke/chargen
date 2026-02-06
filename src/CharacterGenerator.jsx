@@ -48,6 +48,11 @@ const CharacterGenerator = () => {
   const [showLangMenu, setShowLangMenu] = React.useState(false);
   const langMenuTimerRef = React.useRef(null);
 
+  // === 检测是否为触摸设备 ===
+  const isTouchDevice = React.useMemo(() => {
+    return typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
+
   // === 生成按钮点击处理 ===
   const onGenerateClick = async () => {
     const result = await handleGenerate();
@@ -64,6 +69,7 @@ const CharacterGenerator = () => {
 
   // === 语言菜单交互处理 ===
   const handleLangMenuEnter = () => {
+    if (isTouchDevice) return; // 触摸设备使用点击
     if (langMenuTimerRef.current) {
       clearTimeout(langMenuTimerRef.current);
     }
@@ -71,11 +77,33 @@ const CharacterGenerator = () => {
   };
 
   const handleLangMenuLeave = () => {
+    if (isTouchDevice) return; // 触摸设备使用点击
     // 延迟 300ms 关闭，给用户时间移动鼠标
     langMenuTimerRef.current = setTimeout(() => {
       setShowLangMenu(false);
     }, 300);
   };
+
+  // === 语言菜单点击切换（触摸设备） ===
+  const handleLangMenuToggle = () => {
+    if (isTouchDevice) {
+      setShowLangMenu(!showLangMenu);
+    }
+  };
+
+  // === 点击外部关闭语言菜单 ===
+  React.useEffect(() => {
+    if (!showLangMenu || !isTouchDevice) return;
+
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.lang-menu-container')) {
+        setShowLangMenu(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showLangMenu, isTouchDevice]);
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans p-4 md:p-8 relative overflow-hidden">
@@ -89,14 +117,17 @@ const CharacterGenerator = () => {
           <span className="text-xs text-gray-500 font-mono border border-gray-700 rounded px-1">{t('appSubtitle')}</span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* 语言选择器 */}
           <div
-            className="relative z-20"
+            className="relative z-20 lang-menu-container"
             onMouseEnter={handleLangMenuEnter}
             onMouseLeave={handleLangMenuLeave}
           >
-            <button className="p-2 bg-gray-800 hover:bg-gray-700 rounded-full border border-gray-700 transition-colors shadow-lg flex items-center gap-2 px-3">
+            <button
+              onClick={handleLangMenuToggle}
+              className="p-2 bg-gray-800 hover:bg-gray-700 rounded-full border border-gray-700 transition-colors shadow-lg flex items-center gap-1 sm:gap-2 px-2 sm:px-3"
+            >
               <Globe className="w-4 h-4 text-gray-400" />
               <span className="text-xs text-gray-300 font-medium hidden sm:inline">{translations[lang].langName}</span>
             </button>
@@ -213,7 +244,7 @@ const CharacterGenerator = () => {
         </div>
 
         {/* 右侧栏：结果展示 */}
-        <div className="lg:col-span-8 flex flex-col h-[600px] lg:h-auto bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden relative min-h-[500px]">
+        <div className="lg:col-span-8 flex flex-col min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden relative">
           <ResultDisplay
             result={result}
             isLoading={isLoading}
@@ -226,12 +257,24 @@ const CharacterGenerator = () => {
 
       {/* 全局样式 */}
       <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(31, 41, 55, 0.5); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(75, 85, 99, 0.8); border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(107, 114, 128, 1); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+
+        /* 移动端优化 */
+        @media (max-width: 640px) {
+          .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        }
+
+        /* 安全区域适配（iPhone X 及以上刘海屏） */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+          .min-h-screen { padding-bottom: env(safe-area-inset-bottom); }
+        }
       `}</style>
     </div>
   );

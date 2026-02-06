@@ -74,10 +74,79 @@ IMPORTANT: The "system_prompt" field MUST be a roleplay instruction for THIS SPE
 };
 
 /**
- * 清理 JSON 字符串（移除 Markdown 代码块标记）
+ * 清理 JSON 字符串（移除 Markdown 代码块标记并修复常见格式问题）
  * @param {string} text - 原始文本
  * @returns {string} - 清理后的 JSON 字符串
  */
 export const cleanJsonResponse = (text) => {
-  return text.replace(/```json/g, '').replace(/```/g, '').trim();
+  let cleaned = text
+    // 移除 Markdown 代码块标记
+    .replace(/```json\s*/gi, '')
+    .replace(/```\s*/g, '')
+    .trim();
+
+  // 尝试提取 JSON 对象（处理前后有额外文本的情况）
+  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    cleaned = jsonMatch[0];
+  }
+
+  // 修复常见的 JSON 格式问题
+  cleaned = cleaned
+    // 移除尾部逗号（对象和数组）
+    .replace(/,\s*}/g, '}')
+    .replace(/,\s*]/g, ']')
+    // 修复换行符在字符串内的问题（将实际换行转为 \n）
+    .replace(/[\r\n]+/g, (match, offset, string) => {
+      // 检查是否在字符串内（简化检测）
+      const before = string.substring(0, offset);
+      const quotes = (before.match(/(?<!\\)"/g) || []).length;
+      // 如果引号数量为奇数，说明在字符串内
+      if (quotes % 2 === 1) {
+        return '\\n';
+      }
+      return ' ';
+    })
+    // 移除控制字符
+    .replace(/[\x00-\x1F\x7F]/g, (char) => {
+      if (char === '\n' || char === '\r' || char === '\t') {
+        return ' ';
+      }
+      return '';
+    });
+
+  return cleaned;
+};
+
+/**
+ * 安全解析 JSON，带有错误恢复机制
+ * @param {string} text - JSON 字符串
+ * @returns {Object} - 解析后的对象
+ */
+export const safeParseJson = (text) => {
+  const cleaned = cleanJsonResponse(text);
+
+  try {
+    return JSON.parse(cleaned);
+  } catch (firstError) {
+    console.warn('First JSON parse attempt failed, trying recovery...', firstError.message);
+
+    // 尝试更激进的修复
+    let recovered = cleaned
+      // 将单引号替换为双引号（仅用于属性名）
+      .replace(/(\{|,)\s*'([^']+)'\s*:/g, '$1"$2":')
+      // 将单引号值替换为双引号（简单情况）
+      .replace(/:\s*'([^']*)'/g, ':"$1"')
+      // 移除可能的 JavaScript 注释
+      .replace(/\/\/.*$/gm, '')
+      .replace(/\/\*[\s\S]*?\*\//g, '');
+
+    try {
+      return JSON.parse(recovered);
+    } catch (secondError) {
+      console.error('JSON recovery failed:', secondError.message);
+      console.error('Problematic JSON:', cleaned.substring(0, 500) + '...');
+      throw new Error(`JSON 解析失败: ${firstError.message}. 请重试生成。`);
+    }
+  }
 };

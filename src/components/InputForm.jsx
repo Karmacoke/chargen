@@ -66,7 +66,7 @@ const InputForm = ({
           </div>
 
           {/* 角色/性别输入 */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
                 {t('labelRole')}

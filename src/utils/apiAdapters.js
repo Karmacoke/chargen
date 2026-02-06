@@ -3,7 +3,7 @@
  * 封装三种 AI 提供商的 API 调用逻辑
  */
 
-import { cleanJsonResponse } from './helpers';
+import { cleanJsonResponse, safeParseJson } from './helpers';
 
 /**
  * Google Gemini API 适配器
@@ -46,8 +46,7 @@ export const geminiAdapter = async (config, systemInstruction, userPrompt) => {
   const text = resJson.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!text) throw new Error("Empty response from Gemini");
 
-  const cleanJson = cleanJsonResponse(text);
-  return JSON.parse(cleanJson);
+  return safeParseJson(text);
 };
 
 /**
@@ -88,8 +87,7 @@ export const openaiAdapter = async (config, systemInstruction, userPrompt) => {
   const text = resJson.choices?.[0]?.message?.content;
   if (!text) throw new Error("Empty response from OpenAI");
 
-  const cleanJson = cleanJsonResponse(text);
-  return JSON.parse(cleanJson);
+  return safeParseJson(text);
 };
 
 /**
@@ -126,8 +124,7 @@ export const ollamaAdapter = async (config, systemInstruction, userPrompt) => {
   const text = resJson.choices?.[0]?.message?.content;
   if (!text) throw new Error("Empty response from Ollama");
 
-  const cleanJson = cleanJsonResponse(text);
-  return JSON.parse(cleanJson);
+  return safeParseJson(text);
 };
 
 /**
@@ -167,8 +164,7 @@ export const claudeAdapter = async (config, systemInstruction, userPrompt) => {
   const text = resJson.content?.[0]?.text;
   if (!text) throw new Error("Empty response from Claude");
 
-  const cleanJson = cleanJsonResponse(text);
-  return JSON.parse(cleanJson);
+  return safeParseJson(text);
 };
 
 /**
@@ -207,8 +203,7 @@ export const chatglmAdapter = async (config, systemInstruction, userPrompt) => {
   const text = resJson.choices?.[0]?.message?.content;
   if (!text) throw new Error("Empty response from ChatGLM");
 
-  const cleanJson = cleanJsonResponse(text);
-  return JSON.parse(cleanJson);
+  return safeParseJson(text);
 };
 
 /**
@@ -247,8 +242,7 @@ export const kimiAdapter = async (config, systemInstruction, userPrompt) => {
   const text = resJson.choices?.[0]?.message?.content;
   if (!text) throw new Error("Empty response from Kimi");
 
-  const cleanJson = cleanJsonResponse(text);
-  return JSON.parse(cleanJson);
+  return safeParseJson(text);
 };
 
 /**
@@ -287,8 +281,7 @@ export const qwenAdapter = async (config, systemInstruction, userPrompt) => {
   const text = resJson.choices?.[0]?.message?.content;
   if (!text) throw new Error("Empty response from Qwen");
 
-  const cleanJson = cleanJsonResponse(text);
-  return JSON.parse(cleanJson);
+  return safeParseJson(text);
 };
 
 /**
