@@ -4,7 +4,7 @@
 
 CharGen 是一个基于 React 和 AI 大模型（LLM）的智能角色生成工具。它专为小说家、游戏开发者、TRPG (跑团) 玩家和角色扮演爱好者设计。只需提供简单的关键词或选择世界观，AI 就能为你生成一个有血有肉、细节丰富的角色档案。
 
-(建议替换为你的项目实际截图，将截图放入项目文件夹后修改此处链接)
+![CharGen 预览图](./assets/main-page.png)
 
 # ✨ 功能亮点
 
@@ -72,7 +72,7 @@ Git (用于下载代码)
 
 下载代码：
 
-git clone [https://github.com/你的用户名/my-chargen.git](https://github.com/你的用户名/my-chargen.git)
+git clone [https://github.com/Karmacoke/chargen.git](https://github.com/Karmacoke/chargen.git)
 
 
 进入目录并安装依赖：
@@ -92,7 +92,7 @@ npm start
 
 下载代码：
 
-git clone [https://github.com/你的用户名/my-chargen.git](https://github.com/你的用户名/my-chargen.git)
+git clone [https://github.com/Karmacoke/chargen.git](https://github.com/Karmacoke/chargen.git)
 
 
 进入目录并安装依赖：
