@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { User, BookOpen, MessageSquare, Palette, Terminal, History, Brain, Check, Copy } from './Icons';
+import { User, BookOpen, MessageSquare, Palette, Terminal, History, Brain, Check, Copy, Download } from './Icons';
 import { copyToClipboard } from '../utils/helpers';
 
 const ResultDisplay = ({ result, isLoading, config, translations, lang }) => {
@@ -19,6 +19,108 @@ const ResultDisplay = ({ result, isLoading, config, translations, lang }) => {
       setCopyFeedback(type);
       setTimeout(() => setCopyFeedback(''), 2000);
     }
+  };
+
+  // 生成 Markdown 内容
+  const generateMarkdown = () => {
+    if (!result) return '';
+
+    const md = `# ${result.identity.name}${result.identity.aliases ? ` "${result.identity.aliases}"` : ''}
+
+## ${t('mdBasicInfo')}
+
+| ${t('mdAttrHeader')} | ${t('mdValueHeader')} |
+|------|-----|
+| **${t('mdRace')}** | ${result.identity.race} |
+| **${t('mdGender')}** | ${result.identity.gender} |
+| **${t('mdAge')}** | ${result.identity.age} |
+| **${t('mdOccupation')}** | ${result.identity.occupation} |
+| **${t('mdAlignment')}** | ${result.identity.alignment} |
+
+---
+
+## ${t('secPsychology')}
+
+- **MBTI**: ${result.psychology.mbti}
+- **${t('mdCoreDesire')}**: ${result.psychology.desire}
+- **${t('mdCoreFear')}**: ${result.psychology.fear}
+${result.psychology.flaw ? `- **${t('mdFlaw')}**: ${result.psychology.flaw}` : ''}
+${result.psychology.personality_keywords?.length ? `- **${t('mdPersonalityKeywords')}**: ${result.psychology.personality_keywords.join(', ')}` : ''}
+
+---
+
+## ${t('secAppearance')}
+
+${result.appearance.summary}
+
+${result.appearance.features?.map(f => `- ${f}`).join('\n') || ''}
+
+---
+
+## ${t('secBackground')}
+
+**${t('mdOrigin')}**: ${result.background.origin || t('mdUnknown')}
+
+> ${result.background.story_summary}
+
+### 🔒 ${t('labelSecret')}
+
+> ${t('mdSecretWarning')} ${result.background.secret}
+
+---
+
+## ${t('mdNpcSection')}
+
+\`\`\`
+${result.system_prompt || t('mdGenerateFailed')}
+\`\`\`
+
+---
+
+## ${t('mdImageSection')}
+
+\`\`\`
+${result.image_prompt || ''}
+\`\`\`
+
+---
+
+## ${t('mdJsonSection')}
+
+\`\`\`json
+${JSON.stringify(result, null, 2)}
+\`\`\`
+
+---
+
+*${t('mdGeneratedBy')} - ${new Date().toLocaleDateString()}*
+`;
+
+    return md;
+  };
+
+  // 下载 Markdown 文件
+  const handleDownloadMarkdown = () => {
+    if (!result) return;
+
+    const markdown = generateMarkdown();
+    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    // 使用角色名作为文件名，移除特殊字符
+    const fileName = `${result.identity.name.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_')}_character.md`;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+
+    // 显示下载反馈
+    setCopyFeedback('download');
+    setTimeout(() => setCopyFeedback(''), 2000);
   };
 
   // 状态1：等待输入
@@ -48,19 +150,34 @@ const ResultDisplay = ({ result, isLoading, config, translations, lang }) => {
   // 状态3：结果展示
   return (
     <>
-      {/* Tab 导航 */}
-      <div className="flex border-b border-gray-700 bg-gray-900/50 overflow-x-auto scrollbar-hide">
-        <button onClick={() => setActiveTab('card')} className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${activeTab === 'card' ? 'border-indigo-500 text-indigo-400 bg-gray-800' : 'border-transparent text-gray-400 hover:text-white'}`}>
-          <BookOpen className="w-4 h-4" /> <span className="hidden xs:inline sm:inline">{t('tabCard')}</span>
-        </button>
-        <button onClick={() => setActiveTab('sysprompt')} className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${activeTab === 'sysprompt' ? 'border-yellow-500 text-yellow-400 bg-gray-800' : 'border-transparent text-gray-400 hover:text-white'}`}>
-          <MessageSquare className="w-4 h-4" /> <span className="hidden xs:inline sm:inline">{t('tabSysPrompt')}</span>
-        </button>
-        <button onClick={() => setActiveTab('prompt')} className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${activeTab === 'prompt' ? 'border-pink-500 text-pink-400 bg-gray-800' : 'border-transparent text-gray-400 hover:text-white'}`}>
-          <Palette className="w-4 h-4" /> <span className="hidden xs:inline sm:inline">{t('tabPrompt')}</span>
-        </button>
-        <button onClick={() => setActiveTab('json')} className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${activeTab === 'json' ? 'border-emerald-500 text-emerald-400 bg-gray-800' : 'border-transparent text-gray-400 hover:text-white'}`}>
-          <Terminal className="w-4 h-4" /> <span className="hidden xs:inline sm:inline">{t('tabJson')}</span>
+      {/* Tab 导航 + 下载按钮 */}
+      <div className="flex border-b border-gray-700 bg-gray-900/50">
+        <div className="flex-1 flex overflow-x-auto scrollbar-hide">
+          <button onClick={() => setActiveTab('card')} className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${activeTab === 'card' ? 'border-indigo-500 text-indigo-400 bg-gray-800' : 'border-transparent text-gray-400 hover:text-white'}`}>
+            <BookOpen className="w-4 h-4" /> <span className="hidden xs:inline sm:inline">{t('tabCard')}</span>
+          </button>
+          <button onClick={() => setActiveTab('sysprompt')} className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${activeTab === 'sysprompt' ? 'border-yellow-500 text-yellow-400 bg-gray-800' : 'border-transparent text-gray-400 hover:text-white'}`}>
+            <MessageSquare className="w-4 h-4" /> <span className="hidden xs:inline sm:inline">{t('tabSysPrompt')}</span>
+          </button>
+          <button onClick={() => setActiveTab('prompt')} className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${activeTab === 'prompt' ? 'border-pink-500 text-pink-400 bg-gray-800' : 'border-transparent text-gray-400 hover:text-white'}`}>
+            <Palette className="w-4 h-4" /> <span className="hidden xs:inline sm:inline">{t('tabPrompt')}</span>
+          </button>
+          <button onClick={() => setActiveTab('json')} className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${activeTab === 'json' ? 'border-emerald-500 text-emerald-400 bg-gray-800' : 'border-transparent text-gray-400 hover:text-white'}`}>
+            <Terminal className="w-4 h-4" /> <span className="hidden xs:inline sm:inline">{t('tabJson')}</span>
+          </button>
+        </div>
+        {/* 下载按钮 */}
+        <button
+          onClick={handleDownloadMarkdown}
+          className={`flex items-center gap-1 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors flex-shrink-0 border-l border-gray-700 ${
+            copyFeedback === 'download'
+              ? 'text-green-400 bg-green-900/20'
+              : 'text-gray-400 hover:text-white hover:bg-gray-800'
+          }`}
+          title={t('btnDownloadMd')}
+        >
+          {copyFeedback === 'download' ? <Check className="w-4 h-4" /> : <Download className="w-4 h-4" />}
+          <span className="hidden sm:inline">{copyFeedback === 'download' ? t('btnDownloaded') : t('btnDownloadMd')}</span>
         </button>
       </div>
 
