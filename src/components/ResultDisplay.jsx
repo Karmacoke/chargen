@@ -41,10 +41,13 @@ const ResultDisplay = ({ result, isLoading, config, translations, lang }) => {
 
 ## ${t('secPsychology')}
 
+${result.psychology.high_concept ? `> **${t('labelHighConcept')}**: "${result.psychology.high_concept}"` : ''}
+
 - **MBTI**: ${result.psychology.mbti}
 - **${t('mdCoreDesire')}**: ${result.psychology.desire}
 - **${t('mdCoreFear')}**: ${result.psychology.fear}
 ${result.psychology.flaw ? `- **${t('mdFlaw')}**: ${result.psychology.flaw}` : ''}
+${result.psychology.quirks ? `- **${t('labelQuirks')}**: ${result.psychology.quirks}` : ''}
 ${result.psychology.personality_keywords?.length ? `- **${t('mdPersonalityKeywords')}**: ${result.psychology.personality_keywords.join(', ')}` : ''}
 
 ---
@@ -69,7 +72,7 @@ ${result.appearance.features?.map(f => `- ${f}`).join('\n') || ''}
 
 ---
 
-## ${t('mdNpcSection')}
+## ${t('mdCharacterSection')}
 
 \`\`\`
 ${result.system_prompt || t('mdGenerateFailed')}
@@ -204,10 +207,24 @@ ${JSON.stringify(result, null, 2)}
                 <h4 className="text-xs font-bold text-gray-500 uppercase mb-2 sm:mb-3 flex items-center gap-2">
                   <Brain className="w-3 h-3" /> {t('secPsychology')}
                 </h4>
+                {/* 高概念 - 突出显示 */}
+                {result.psychology.high_concept && (
+                  <div className="mb-3 p-2 bg-indigo-900/30 rounded-lg border border-indigo-700/50">
+                    <span className="text-xs text-indigo-300 font-medium">{t('labelHighConcept')}</span>
+                    <p className="text-sm text-indigo-100 mt-1 italic">"{result.psychology.high_concept}"</p>
+                  </div>
+                )}
                 <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
                   <div className="flex justify-between"><span className="text-gray-400">{t('labelMbti')}</span><span className="text-yellow-400 font-mono">{result.psychology.mbti}</span></div>
                   <div className="flex justify-between gap-2"><span className="text-gray-400 flex-shrink-0">{t('labelDesire')}</span><span className="text-gray-200 text-right truncate">{result.psychology.desire}</span></div>
                   <div className="flex justify-between gap-2"><span className="text-gray-400 flex-shrink-0">{t('labelFear')}</span><span className="text-gray-200 text-right truncate">{result.psychology.fear}</span></div>
+                  {/* 怪癖 - 特殊样式 */}
+                  {result.psychology.quirks && (
+                    <div className="flex justify-between gap-2 pt-1 border-t border-gray-700/50">
+                      <span className="text-gray-400 flex-shrink-0">{t('labelQuirks')}</span>
+                      <span className="text-orange-300 text-right">{result.psychology.quirks}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

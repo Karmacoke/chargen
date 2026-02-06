@@ -19,6 +19,7 @@ const CharacterGenerator = () => {
     mode,
     worldSettingKey,
     customWorldSetting,
+    subversionLevel,
     role,
     gender,
     keywords,
@@ -30,6 +31,7 @@ const CharacterGenerator = () => {
     setMode,
     setWorldSettingKey,
     setCustomWorldSetting,
+    setSubversionLevel,
     setRole,
     setGender,
     setKeywords,
@@ -198,6 +200,8 @@ const CharacterGenerator = () => {
             setWorldSettingKey={setWorldSettingKey}
             customWorldSetting={customWorldSetting}
             setCustomWorldSetting={setCustomWorldSetting}
+            subversionLevel={subversionLevel}
+            setSubversionLevel={setSubversionLevel}
             role={role}
             setRole={setRole}
             gender={gender}

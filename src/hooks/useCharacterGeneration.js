@@ -17,6 +17,7 @@ export const useCharacterGeneration = () => {
   const [mode, setMode] = useState('custom');
   const [worldSettingKey, setWorldSettingKey] = useState('fantasy');
   const [customWorldSetting, setCustomWorldSetting] = useState('');
+  const [subversionLevel, setSubversionLevel] = useState('ordinary');
   const [role, setRole] = useState('');
   const [gender, setGender] = useState('');
   const [keywords, setKeywords] = useState('');
@@ -110,7 +111,8 @@ export const useCharacterGeneration = () => {
       gender,
       keywords,
       targetLanguage: targetLanguageName,
-      worldOptions: translations[lang].worldOptions
+      worldOptions: translations[lang].worldOptions,
+      subversionLevel
     });
 
     const systemInstruction = buildSystemInstruction(targetLanguageName);
@@ -169,6 +171,7 @@ export const useCharacterGeneration = () => {
     mode,
     worldSettingKey,
     customWorldSetting,
+    subversionLevel,
     role,
     gender,
     keywords,
@@ -182,6 +185,7 @@ export const useCharacterGeneration = () => {
     setMode,
     setWorldSettingKey,
     setCustomWorldSetting,
+    setSubversionLevel,
     setRole,
     setGender,
     setKeywords,

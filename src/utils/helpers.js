@@ -26,11 +26,58 @@ export const copyToClipboard = (text) => {
 };
 
 /**
+ * 获取反套路程度的 AI 指导文本
+ * @param {string} level - 反套路等级 key
+ * @returns {string} - AI 指导文本
+ */
+const getSubversionGuidance = (level) => {
+  const guidance = {
+    ordinary: `SUBVERSION LEVEL: Ordinary (0/4)
+Create an ARCHETYPAL character. They should perfectly match expectations for their role.
+- A knight: honorable, brave, armored, sword-wielding
+- A witch: mysterious, dark robes, pointy hat, cauldron
+- A merchant: shrewd, money-focused, well-dressed
+NO surprising contradictions. This is a classic, textbook example of their profession.`,
+
+    surprising: `SUBVERSION LEVEL: Surprising (1/4)
+Create a character with ONE OR TWO small unexpected traits that make them interesting.
+- A knight who secretly writes poetry
+- A witch who is terrible at remembering spell ingredients
+- A merchant who gives discounts to the poor
+These quirks are charming but don't fundamentally challenge the character's core identity.`,
+
+    memorable: `SUBVERSION LEVEL: Memorable (2/4)
+Create a character with CLEAR INNER CONTRADICTIONS that create dramatic tension.
+- A knight who is terrified of blood but fights anyway
+- A witch who doesn't believe in magic but uses it daily
+- A merchant who secretly hates wealth
+The contradiction should be central to who they are, not just a quirk.`,
+
+    unconventional: `SUBVERSION LEVEL: Unconventional (3/4)
+Create a character who STRONGLY DEFIES expectations for their role.
+- A gentle orc barbarian who prefers diplomacy
+- A cowardly dragon slayer who runs from mice
+- A healer who secretly enjoys watching suffering
+The subversion should be immediately obvious and create constant tension with their role.`,
+
+    extreme: `SUBVERSION LEVEL: Extreme Rebel (4/4)
+Create a character who COMPLETELY SHATTERS the mold. They are a walking paradox.
+- A pacifist assassin who has never killed
+- A devout nun who curses constantly but has unshakeable faith
+- A fire mage who is deathly afraid of flames
+- A thief who compulsively returns what they steal
+Every aspect of this character should challenge assumptions. They are unforgettable BECAUSE they make no sense at first glance.`
+  };
+
+  return guidance[level] || guidance.ordinary;
+};
+
+/**
  * 构建角色生成的用户 Prompt
- * @param {Object} params - { mode, worldSetting, role, gender, keywords, targetLanguage, worldOptions }
+ * @param {Object} params - { mode, worldSetting, role, gender, keywords, targetLanguage, worldOptions, subversionLevel }
  * @returns {string} - 用户 Prompt
  */
-export const buildUserPrompt = ({ mode, worldSetting, role, gender, keywords, targetLanguage, worldOptions }) => {
+export const buildUserPrompt = ({ mode, worldSetting, role, gender, keywords, targetLanguage, worldOptions, subversionLevel }) => {
   if (mode === 'random') {
     const keys = Object.keys(worldOptions);
     const randomKey = keys[Math.floor(Math.random() * keys.length)];
@@ -38,11 +85,16 @@ export const buildUserPrompt = ({ mode, worldSetting, role, gender, keywords, ta
     return `Please generate a detailed character completely at random. World setting: ${randomWorld}. Language of output MUST be: ${targetLanguage}.`;
   }
 
+  const subversionGuidance = getSubversionGuidance(subversionLevel || 'ordinary');
+
   return `Please generate and refine a detailed character based on the following clues:
   - World View: ${worldSetting}
   - Role/Identity: ${role || 'Random'}
   - Gender: ${gender || 'Random'}
   - Keywords/Clues: ${keywords || 'None, please improvise'}
+
+${subversionGuidance}
+
   If information is scarce, please complete it creatively.
   IMPORTANT: The output content MUST be in ${targetLanguage} language.`;
 };
@@ -59,17 +111,36 @@ Your task is to generate a highly detailed fictional character based on user inp
 You MUST output strictly in JSON format. NO Markdown tags.
 Use ${targetLanguage} for all text fields (except image_prompt and system_prompt).
 
-JSON Structure:
+## DRAMATIC SEASONING (IMPORTANT!)
+You are NOT creating a background NPC. You are forging a PROTAGONIST-level character.
+- Functional NPCs only have roles (shopkeeper, quest-giver). AVOID this.
+- Protagonists have SPECIFIC visual symbols and behavioral quirks that make them instantly memorable.
+- Think: "What single image or gesture would make this character iconic?"
+- Add contradictions: A gentle giant who faints at the sight of blood. A fearless warrior who talks to plants.
+- Give them a "camera-ready" moment: What would their movie poster look like?
+
+## JSON Structure:
 {
-  "identity": { "name": "Name", "aliases": "Aliases", "age": "Age", "gender": "Gender", "race": "Race", "occupation": "Occupation", "alignment": "Alignment" },
-  "appearance": { "summary": "Summary", "features": ["Feature1"] },
-  "psychology": { "mbti": "MBTI", "personality_keywords": ["Key1"], "desire": "Desire", "fear": "Fear", "flaw": "Flaw" },
-  "background": { "origin": "Origin", "story_summary": "Story", "secret": "Secret" },
+  "identity": { "name": "Name", "aliases": "Aliases/Title", "age": "Age", "gender": "Gender", "race": "Race", "occupation": "Occupation", "alignment": "Alignment" },
+  "appearance": { "summary": "Summary", "features": ["Feature1", "Feature2"] },
+  "psychology": {
+    "mbti": "MBTI",
+    "personality_keywords": ["Key1", "Key2"],
+    "desire": "Core Desire",
+    "fear": "Core Fear",
+    "flaw": "Character Flaw",
+    "high_concept": "A one-sentence character pitch (e.g., 'An immortal cursed bounty hunter who must hunt his own kind to survive')",
+    "quirks": "A specific, visual behavioral quirk (e.g., 'Always taps the table three times with left hand before speaking', 'Collects teeth from defeated enemies')"
+  },
+  "background": { "origin": "Origin", "story_summary": "Story", "secret": "Dark Secret" },
   "image_prompt": "Visual description tags for Stable Diffusion/Midjourney (in English)",
-  "system_prompt": "A detailed system instruction in ${targetLanguage} that tells an LLM to roleplay as THIS specific character. It should include: the character's name, personality traits, background, speaking style, knowledge, and behavioral patterns. Example format: 'You are [Name], a [occupation] from [origin]. Your personality is [traits]. You speak in a [style] manner. You know about [knowledge]. When interacting, you tend to [behaviors]...'"
+  "system_prompt": "A detailed system instruction in ${targetLanguage} that tells an LLM to roleplay as THIS specific character. Include: name, personality, background, speaking style, knowledge, behavioral patterns, and quirks."
 }
 
-IMPORTANT: The "system_prompt" field MUST be a roleplay instruction for THIS SPECIFIC CHARACTER, NOT a general character generator instruction.
+IMPORTANT:
+- The "high_concept" is the elevator pitch - if you had 10 seconds to describe this character to a movie producer, what would you say?
+- The "quirks" must be SPECIFIC and VISUAL - not "is nervous" but "constantly adjusts glasses even when not wearing any"
+- The "system_prompt" field MUST be a roleplay instruction for THIS SPECIFIC CHARACTER, NOT a general character generator instruction.
   `.trim();
 };
 

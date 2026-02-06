@@ -13,6 +13,8 @@ const InputForm = ({
   setWorldSettingKey,
   customWorldSetting,
   setCustomWorldSetting,
+  subversionLevel,
+  setSubversionLevel,
   role,
   setRole,
   gender,
@@ -119,6 +121,22 @@ const InputForm = ({
               onChange={(e) => setKeywords(e.target.value)}
               className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
             />
+          </div>
+
+          {/* 反套路程度选择 */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+              {t('labelSubversion')}
+            </label>
+            <select
+              value={subversionLevel}
+              onChange={(e) => setSubversionLevel(e.target.value)}
+              className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+            >
+              {Object.entries(translations[lang].subversionOptions).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
+            </select>
           </div>
         </div>
       ) : (
