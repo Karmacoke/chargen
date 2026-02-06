@@ -54,7 +54,9 @@ OpenAI / ChatGPT (支持 gpt-4o, gpt-3.5 等)
 
 API 交互：Fetch API (Streamless)
 
-# 🚀 快速开始 （可直接访问本项目在Github上部署的地址： https://karmacoke.github.io/chargen/ 立即开始设计你的角色）
+# 🚀 快速开始
+
+### 可直接访问本项目在Github上部署的地址： [https://karmacoke.github.io/chargen/](https://karmacoke.github.io/chargen/) 立即开始设计你的角色
 
 ## 本地运行
 
