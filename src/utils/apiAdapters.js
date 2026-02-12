@@ -1,39 +1,35 @@
 /**
- * API 适配器模块
- * 封装三种 AI 提供商的 API 调用逻辑
+ * apiAdapters - API 适配器模块
+ * 职责：统一多种 AI 提供商的调用接口
  */
 
-import { cleanJsonResponse, safeParseJson } from './helpers';
+import { safeParseJson } from './helpers';
+import { fetchWithTimeout } from './fetchWithTimeout';
 
-/**
- * Google Gemini API 适配器
- * @param {Object} config - { apiKey, model }
- * @param {string} systemInstruction - 系统指令
- * @param {string} userPrompt - 用户 Prompt
- * @returns {Promise<Object>} - 解析后的角色数据
- */
+// ============================================
+// Gemini 适配器
+// ============================================
+
 export const geminiAdapter = async (config, systemInstruction, userPrompt) => {
   const cleanApiKey = config.apiKey.trim();
   const cleanModel = config.model.trim();
-
-  // 合并系统指令到 Prompt（避免 API 版本兼容问题）
   const finalPrompt = `${systemInstruction}\n\n---\n\nUser Request: ${userPrompt}`;
 
-  // 根据模型版本选择 API 版本
+  // 选择 API 版本（2.0/2.5/exp 使用 v1beta，其他使用 v1）
   const apiVersion = cleanModel.includes('2.0') || cleanModel.includes('2.5') || cleanModel.includes('exp')
     ? 'v1beta'
     : 'v1';
+
   const modelName = cleanModel.includes('/') ? cleanModel : `models/${cleanModel}`;
 
-  const response = await fetch(
+  const response = await fetchWithTimeout(
     `https://generativelanguage.googleapis.com/${apiVersion}/${modelName}:generateContent?key=${cleanApiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: finalPrompt }] }]
-      })
-    }
+      body: JSON.stringify({ contents: [{ parts: [{ text: finalPrompt }] }] })
+    },
+    30000 // 30秒超时
   );
 
   if (!response.ok) {
@@ -49,20 +45,17 @@ export const geminiAdapter = async (config, systemInstruction, userPrompt) => {
   return safeParseJson(text);
 };
 
-/**
- * OpenAI/DeepSeek API 适配器
- * @param {Object} config - { apiKey, baseUrl, model }
- * @param {string} systemInstruction - 系统指令
- * @param {string} userPrompt - 用户 Prompt
- * @returns {Promise<Object>} - 解析后的角色数据
- */
+// ============================================
+// OpenAI/DeepSeek 适配器
+// ============================================
+
 export const openaiAdapter = async (config, systemInstruction, userPrompt) => {
   const cleanApiKey = config.apiKey.trim();
   const cleanModel = config.model.trim();
   let baseUrl = config.baseUrl || 'https://api.openai.com/v1';
-  baseUrl = baseUrl.replace(/\/$/, ''); // 移除末尾斜杠
+  baseUrl = baseUrl.replace(/\/$/, '');
 
-  const response = await fetch(`${baseUrl}/chat/completions`, {
+  const response = await fetchWithTimeout(`${baseUrl}/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -76,7 +69,7 @@ export const openaiAdapter = async (config, systemInstruction, userPrompt) => {
       ],
       temperature: 0.7
     })
-  });
+  }, 30000);
 
   if (!response.ok) {
     const errText = await response.text();
@@ -90,19 +83,16 @@ export const openaiAdapter = async (config, systemInstruction, userPrompt) => {
   return safeParseJson(text);
 };
 
-/**
- * Ollama API 适配器
- * @param {Object} config - { baseUrl, model }
- * @param {string} systemInstruction - 系统指令
- * @param {string} userPrompt - 用户 Prompt
- * @returns {Promise<Object>} - 解析后的角色数据
- */
+// ============================================
+// Ollama 适配器
+// ============================================
+
 export const ollamaAdapter = async (config, systemInstruction, userPrompt) => {
   const cleanModel = config.model.trim();
   let baseUrl = config.baseUrl || 'http://localhost:11434/v1';
   baseUrl = baseUrl.replace(/\/$/, '');
 
-  const response = await fetch(`${baseUrl}/chat/completions`, {
+  const response = await fetchWithTimeout(`${baseUrl}/chat/completions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -113,7 +103,7 @@ export const ollamaAdapter = async (config, systemInstruction, userPrompt) => {
       ],
       temperature: 0.7
     })
-  });
+  }, 30000);
 
   if (!response.ok) {
     const errText = await response.text();
@@ -127,18 +117,15 @@ export const ollamaAdapter = async (config, systemInstruction, userPrompt) => {
   return safeParseJson(text);
 };
 
-/**
- * Claude API 适配器（Anthropic Messages API）
- * @param {Object} config - { apiKey, model }
- * @param {string} systemInstruction - 系统指令
- * @param {string} userPrompt - 用户 Prompt
- * @returns {Promise<Object>} - 解析后的角色数据
- */
+// ============================================
+// Claude 适配器
+// ============================================
+
 export const claudeAdapter = async (config, systemInstruction, userPrompt) => {
   const cleanApiKey = config.apiKey.trim();
   const cleanModel = config.model.trim();
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -153,7 +140,7 @@ export const claudeAdapter = async (config, systemInstruction, userPrompt) => {
         { role: "user", content: userPrompt }
       ]
     })
-  });
+  }, 30000);
 
   if (!response.ok) {
     const errText = await response.text();
@@ -167,18 +154,15 @@ export const claudeAdapter = async (config, systemInstruction, userPrompt) => {
   return safeParseJson(text);
 };
 
-/**
- * ChatGLM API 适配器（智谱 AI）
- * @param {Object} config - { apiKey, model }
- * @param {string} systemInstruction - 系统指令
- * @param {string} userPrompt - 用户 Prompt
- * @returns {Promise<Object>} - 解析后的角色数据
- */
+// ============================================
+// ChatGLM 适配器
+// ============================================
+
 export const chatglmAdapter = async (config, systemInstruction, userPrompt) => {
   const cleanApiKey = config.apiKey.trim();
   const cleanModel = config.model.trim();
 
-  const response = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
+  const response = await fetchWithTimeout('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -192,7 +176,7 @@ export const chatglmAdapter = async (config, systemInstruction, userPrompt) => {
       ],
       temperature: 0.7
     })
-  });
+  }, 30000);
 
   if (!response.ok) {
     const errText = await response.text();
@@ -206,18 +190,15 @@ export const chatglmAdapter = async (config, systemInstruction, userPrompt) => {
   return safeParseJson(text);
 };
 
-/**
- * Kimi API 适配器（Moonshot AI）
- * @param {Object} config - { apiKey, model }
- * @param {string} systemInstruction - 系统指令
- * @param {string} userPrompt - 用户 Prompt
- * @returns {Promise<Object>} - 解析后的角色数据
- */
+// ============================================
+// Kimi 适配器
+// ============================================
+
 export const kimiAdapter = async (config, systemInstruction, userPrompt) => {
   const cleanApiKey = config.apiKey.trim();
   const cleanModel = config.model.trim();
 
-  const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+  const response = await fetchWithTimeout('https://api.moonshot.cn/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -231,7 +212,7 @@ export const kimiAdapter = async (config, systemInstruction, userPrompt) => {
       ],
       temperature: 0.7
     })
-  });
+  }, 30000);
 
   if (!response.ok) {
     const errText = await response.text();
@@ -245,18 +226,15 @@ export const kimiAdapter = async (config, systemInstruction, userPrompt) => {
   return safeParseJson(text);
 };
 
-/**
- * Qwen API 适配器（通义千问）
- * @param {Object} config - { apiKey, model }
- * @param {string} systemInstruction - 系统指令
- * @param {string} userPrompt - 用户 Prompt
- * @returns {Promise<Object>} - 解析后的角色数据
- */
+// ============================================
+// Qwen 适配器
+// ============================================
+
 export const qwenAdapter = async (config, systemInstruction, userPrompt) => {
   const cleanApiKey = config.apiKey.trim();
   const cleanModel = config.model.trim();
 
-  const response = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
+  const response = await fetchWithTimeout('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -270,7 +248,7 @@ export const qwenAdapter = async (config, systemInstruction, userPrompt) => {
       ],
       temperature: 0.7
     })
-  });
+  }, 30000);
 
   if (!response.ok) {
     const errText = await response.text();
@@ -284,11 +262,10 @@ export const qwenAdapter = async (config, systemInstruction, userPrompt) => {
   return safeParseJson(text);
 };
 
-/**
- * 测试 API 连接
- * @param {Object} config - { provider, apiKey, baseUrl, model }
- * @returns {Promise<boolean>} - 是否连接成功
- */
+// ============================================
+// 连接测试函数
+// ============================================
+
 export const testConnection = async (config) => {
   if (config.provider !== 'ollama' && !config.apiKey) {
     throw new Error("Missing API Key");
@@ -300,6 +277,7 @@ export const testConnection = async (config) => {
       const cleanModel = config.model.trim();
       const apiVersion = cleanModel.includes('2.0') || cleanModel.includes('2.5') || cleanModel.includes('exp') ? 'v1beta' : 'v1';
       const modelName = cleanModel.includes('/') ? cleanModel : `models/${cleanModel}`;
+
       const response = await fetch(
         `https://generativelanguage.googleapis.com/${apiVersion}/${modelName}:generateContent?key=${cleanApiKey}`,
         {
@@ -309,9 +287,11 @@ export const testConnection = async (config) => {
         }
       );
       return response.ok;
+
     } else if (config.provider === 'claude') {
       const cleanApiKey = config.apiKey.trim();
       const cleanModel = config.model.trim();
+
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -326,9 +306,11 @@ export const testConnection = async (config) => {
         })
       });
       return response.ok;
+
     } else if (config.provider === 'chatglm') {
       const cleanApiKey = config.apiKey.trim();
       const cleanModel = config.model.trim();
+
       const response = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
         method: 'POST',
         headers: {
@@ -341,9 +323,11 @@ export const testConnection = async (config) => {
         })
       });
       return response.ok;
+
     } else if (config.provider === 'kimi') {
       const cleanApiKey = config.apiKey.trim();
       const cleanModel = config.model.trim();
+
       const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -356,9 +340,11 @@ export const testConnection = async (config) => {
         })
       });
       return response.ok;
+
     } else if (config.provider === 'qwen') {
       const cleanApiKey = config.apiKey.trim();
       const cleanModel = config.model.trim();
+
       const response = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -371,28 +357,40 @@ export const testConnection = async (config) => {
         })
       });
       return response.ok;
+
     } else if (config.provider === 'ollama') {
       const url = `${config.baseUrl || 'http://localhost:11434'}/api/chat`;
+
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: config.model, messages: [{ role: 'user', content: 'hi' }], stream: false })
+        body: JSON.stringify({
+          model: config.model,
+          messages: [{ role: 'user', content: 'hi' }],
+          stream: false
+        })
       });
       return response.ok;
+
     } else {
-      // OpenAI 及兼容接口
       const url = `${config.baseUrl || 'https://api.openai.com/v1'}/chat/completions`;
+
       const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${config.apiKey}`
       };
+
       const response = await fetch(url, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ model: config.model, messages: [{ role: 'user', content: 'hi' }] })
+        body: JSON.stringify({
+          model: config.model,
+          messages: [{ role: 'user', content: 'hi' }]
+        })
       });
       return response.ok;
     }
+
   } catch (e) {
     console.error('Connection test failed:', e);
     return false;

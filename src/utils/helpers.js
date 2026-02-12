@@ -1,23 +1,34 @@
 /**
- * 工具函数模块
- * 提供通用的辅助功能（剪贴板、Prompt 构建等）
+ * helpers - 工具函数模块
+ * 职责：剪贴板操作、Prompt 构建、JSON 清理、视觉模板
  */
 
-/**
- * 复制文本到剪贴板
- * @param {string} text - 要复制的文本
- * @returns {boolean} - 是否成功
- */
-export const copyToClipboard = (text) => {
+// ============================================
+// 剪贴板操作
+// ============================================
+
+export const copyToClipboard = async (text) => {
+  // 优先使用现代 Clipboard API
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (err) {
+      console.error('Clipboard API failed:', err);
+    }
+  }
+
+  // 降级方案：使用已废弃的 execCommand
   const textArea = document.createElement("textarea");
   textArea.value = text;
+  textArea.style.position = 'fixed';
+  textArea.style.left = '-999999px';
   document.body.appendChild(textArea);
   textArea.select();
-
   try {
-    document.execCommand('copy');
+    const success = document.execCommand('copy');
     document.body.removeChild(textArea);
-    return true;
+    return success;
   } catch (err) {
     console.error('Copy failed', err);
     document.body.removeChild(textArea);
@@ -25,11 +36,10 @@ export const copyToClipboard = (text) => {
   }
 };
 
-/**
- * 获取反套路程度的 AI 指导文本
- * @param {string} level - 反套路等级 key
- * @returns {string} - AI 指导文本
- */
+// ============================================
+// 反套路系统
+// ============================================
+
 const getSubversionGuidance = (level) => {
   const guidance = {
     ordinary: `SUBVERSION LEVEL: Ordinary (0/4)
@@ -72,11 +82,10 @@ Every aspect of this character should challenge assumptions. They are unforgetta
   return guidance[level] || guidance.ordinary;
 };
 
-/**
- * 构建角色生成的用户 Prompt
- * @param {Object} params - { mode, worldSetting, role, gender, keywords, targetLanguage, worldOptions, subversionLevel }
- * @returns {string} - 用户 Prompt
- */
+// ============================================
+// Prompt 构建
+// ============================================
+
 export const buildUserPrompt = ({ mode, worldSetting, role, gender, keywords, targetLanguage, worldOptions, subversionLevel }) => {
   if (mode === 'random') {
     const keys = Object.keys(worldOptions);
@@ -99,11 +108,6 @@ ${subversionGuidance}
   IMPORTANT: The output content MUST be in ${targetLanguage} language.`;
 };
 
-/**
- * 构建系统指令
- * @param {string} targetLanguage - 目标语言名称
- * @returns {string} - System Instruction
- */
 export const buildSystemInstruction = (targetLanguage) => {
   return `
 You are a professional Character Generator API.
@@ -133,9 +137,28 @@ You are NOT creating a background NPC. You are forging a PROTAGONIST-level chara
     "quirks": "A specific, visual behavioral quirk (e.g., 'Always taps the table three times with left hand before speaking', 'Collects teeth from defeated enemies')"
   },
   "background": { "origin": "Origin", "story_summary": "Story", "secret": "Dark Secret" },
-  "image_prompt": "Visual description tags for Stable Diffusion/Midjourney (in English)",
+  "image_prompt": "(SEE IMAGE PROMPT RULES BELOW)",
   "system_prompt": "A detailed system instruction in ${targetLanguage} that tells an LLM to roleplay as THIS specific character. Include: name, personality, background, speaking style, knowledge, behavioral patterns, and quirks."
 }
+
+## IMAGE PROMPT RULES (CRITICAL - FOLLOW EXACTLY):
+The "image_prompt" field must be a FULL BODY character portrait prompt in English, structured in this EXACT order:
+
+1. **Identity**: [Character name], [race] [occupation], full body standing pose
+2. **Appearance**: [Detailed facial features], [body type], [distinguishing marks/scars/tattoos]
+3. **Clothing & Props**: [Costume details], [weapons], [accessories], [materials/textures]
+4. **Pose & Expression**: standing pose, [facial expression that reflects personality]
+5. **Format & Composition**: 9:16 aspect ratio, vertical portrait orientation, full body composition from head to feet
+6. **Quality & Style**: masterpiece, best quality, 8K resolution, highly detailed, 2D game character concept art, digital illustration, flat color, cell shading, clean lines, sharp focus, white background
+7. **Style Constraints**: The image must NOT be photorealistic, 3D rendered, or sketch-like. Avoid pencil drawings, black and white styles, monochrome, blurry effects, cropped compositions, half-body shots, portrait-only frames, messy linework, watercolor styles, oil painting aesthetics, depth of field effects, or motion blur.
+
+RULES:
+- The aspect ratio is 9:16 (vertical portrait orientation).
+- MUST be FULL BODY (head to feet visible). NEVER half-body or portrait-only.
+- MUST include quality keywords: "8K resolution", "masterpiece", "2D game character concept art".
+- MUST include style constraints as natural language descriptions (not bracketed negative prompts).
+- The prompt should be rich and descriptive (150-250 words), painting a vivid picture of the character.
+- Use English only for this field.
 
 IMPORTANT:
 - The "high_concept" is the elevator pitch - if you had 10 seconds to describe this character to a movie producer, what would you say?
@@ -144,41 +167,33 @@ IMPORTANT:
   `.trim();
 };
 
-/**
- * 清理 JSON 字符串（移除 Markdown 代码块标记并修复常见格式问题）
- * @param {string} text - 原始文本
- * @returns {string} - 清理后的 JSON 字符串
- */
+// ============================================
+// JSON 清理与解析
+// ============================================
+
 export const cleanJsonResponse = (text) => {
   let cleaned = text
-    // 移除 Markdown 代码块标记
     .replace(/```json\s*/gi, '')
     .replace(/```\s*/g, '')
     .trim();
 
-  // 尝试提取 JSON 对象（处理前后有额外文本的情况）
   const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
   if (jsonMatch) {
     cleaned = jsonMatch[0];
   }
 
-  // 修复常见的 JSON 格式问题
   cleaned = cleaned
-    // 移除尾部逗号（对象和数组）
     .replace(/,\s*}/g, '}')
     .replace(/,\s*]/g, ']')
-    // 修复换行符在字符串内的问题（将实际换行转为 \n）
     .replace(/[\r\n]+/g, (match, offset, string) => {
-      // 检查是否在字符串内（简化检测）
       const before = string.substring(0, offset);
-      const quotes = (before.match(/(?<!\\)"/g) || []).length;
-      // 如果引号数量为奇数，说明在字符串内
+      // 使用兼容性更好的方式计算未转义的引号数量
+      const quotes = (before.split('"').length - 1) - (before.split('\\"').length - 1);
       if (quotes % 2 === 1) {
         return '\\n';
       }
       return ' ';
     })
-    // 移除控制字符
     .replace(/[\x00-\x1F\x7F]/g, (char) => {
       if (char === '\n' || char === '\r' || char === '\t') {
         return ' ';
@@ -189,11 +204,6 @@ export const cleanJsonResponse = (text) => {
   return cleaned;
 };
 
-/**
- * 安全解析 JSON，带有错误恢复机制
- * @param {string} text - JSON 字符串
- * @returns {Object} - 解析后的对象
- */
 export const safeParseJson = (text) => {
   const cleaned = cleanJsonResponse(text);
 
@@ -202,13 +212,9 @@ export const safeParseJson = (text) => {
   } catch (firstError) {
     console.warn('First JSON parse attempt failed, trying recovery...', firstError.message);
 
-    // 尝试更激进的修复
     let recovered = cleaned
-      // 将单引号替换为双引号（仅用于属性名）
       .replace(/(\{|,)\s*'([^']+)'\s*:/g, '$1"$2":')
-      // 将单引号值替换为双引号（简单情况）
       .replace(/:\s*'([^']*)'/g, ':"$1"')
-      // 移除可能的 JavaScript 注释
       .replace(/\/\/.*$/gm, '')
       .replace(/\/\*[\s\S]*?\*\//g, '');
 
@@ -220,4 +226,24 @@ export const safeParseJson = (text) => {
       throw new Error(`JSON 解析失败: ${firstError.message}. 请重试生成。`);
     }
   }
+};
+
+// ============================================
+// 固定视觉模板
+// ============================================
+
+export const VISUAL_TEMPLATES = {
+  three_views: `Based on the attached reference image, create a character reference sheet with three views (turnaround). Show the SAME character from three angles: front view, side view (3/4 or profile), and back view. All three views on the same canvas, clearly separated, same scale. T-pose or A-pose for technical clarity. Full body, head to feet visible. 16:9 aspect ratio, horizontal landscape orientation. Game character design, character sheet, reference sheet, three views turnaround, flat color, clean lines, white background, concept art, 2D digital illustration, 8K resolution, masterpiece, best quality, highly detailed. The image must NOT be photorealistic, 3D rendered, or sketch-like. Avoid pencil drawings, black and white styles, monochrome, blurry effects, messy linework, watercolor styles, oil painting aesthetics, depth of field effects, or motion blur.`,
+
+  concept_breakdown: `Based on the attached reference image, create a panoramic character deep concept breakdown sheet. This must be a comprehensive design document showing the character's full anatomy of design elements. Center: Place the character's full body 2D illustration or primary dynamic pose as the visual anchor point. Surrounding layout: Around the central figure, systematically arrange deconstructed elements in the surrounding white space. Include: 1) Clothing layers - deconstruct the outfit into individual garments, showing what's underneath when outer layers are removed, including intimate undergarments with design details and material focus. 2) Material close-ups - magnify 1-2 key areas to showcase texture details. 3) Life slice items - this is NOT limited to large props, must include the character's daily life objects: everyday bag or handbag shown "opened" with contents spilling out (wallet, keys, phone, cosmetics, medicines), small accessories they frequently use, intimate personal items that reveal hidden personality aspects (private diary, medication/supplement boxes, vape pen, or more personal objects based on character). Visual guidance: Use hand-drawn arrows or guide lines connecting peripheral breakdown items to corresponding body parts or areas on the central figure (e.g., bag connecting to hand). Annotation style: Simulate handwritten notes next to each deconstructed element, briefly explaining materials or brand/model hints. 16:9 aspect ratio, horizontal landscape orientation. Art style: High-quality 2D illustration or concept design sketch style, clean sharp lines. Background: Use beige, parchment, or light gray textured background creating design manuscript atmosphere. White or light neutral backdrop, flat color rendering, detailed illustration, 2D digital concept art, 8K resolution, masterpiece, best quality, highly detailed. The image must NOT be photorealistic, 3D rendered, or use realistic painting techniques. Avoid oil painting styles, watercolor effects, depth of field blur, motion blur, or messy sketchy lines.`,
+
+  expression_sheet: `Based on the attached reference image, create a character expression sheet. Show 6-9 different headshots/portrait busts of the SAME character displaying different emotions: happy, sad, angry, surprised, neutral, excited, embarrassed, confident, fearful. Arrange in a grid layout, all clearly visible. FULL COLOR rendering required. 16:9 aspect ratio, horizontal landscape orientation. Game character design, expression sheet, facial expressions, emotion chart, character emotions, multiple headshots, various reactions, full color, flat color, clean lines, white background, concept art, 2D digital illustration, 8K resolution, masterpiece, best quality, highly detailed. The image must NOT be photorealistic, 3D rendered, or sketch-like. Avoid pencil drawings, black and white styles, monochrome, blurry effects, messy linework, watercolor styles, oil painting aesthetics, depth of field effects, or motion blur.`,
+
+  scale_chart: `Based on the attached reference image, create a character scale chart. Show the character standing in a neutral pose next to a height measurement grid with clear measurement lines and height markers (metric and imperial). Full body, head to feet visible. 16:9 aspect ratio, horizontal landscape orientation. Game character design, scale chart, height comparison, reference sheet, full body standing pose, neutral pose, measurement grid, technical illustration, concept art, flat color, clean lines, white background, 2D digital concept art, 8K resolution, masterpiece, best quality, highly detailed. The image must NOT be photorealistic, 3D rendered, or sketch-like. Avoid pencil drawings, black and white styles, monochrome, blurry effects, messy linework, watercolor styles, oil painting aesthetics, depth of field effects, or motion blur.`,
+
+  action_poses: `Based on the attached reference image, create a character action pose sheet. Show 3-5 dynamic poses of the SAME character: combat stance, running, jumping, attacking, and using special abilities. All poses on one canvas, sharp focus, NO motion blur. 16:9 aspect ratio, horizontal landscape orientation. Game character design, action poses, dynamic poses, combat stances, character action sheet, multiple poses, movement study, full body, sharp focus, dramatic angles, full color, flat color, clean lines, white background, concept art, 2D digital illustration, 8K resolution, masterpiece, best quality, highly detailed. The image must NOT be photorealistic, 3D rendered, or use motion blur effects. Avoid sketch-like styles, pencil drawings, black and white rendering, monochrome, blurry compositions, messy linework, watercolor styles, oil painting aesthetics, or depth of field blur.`
+};
+
+export const getVisualTemplate = (type) => {
+  return VISUAL_TEMPLATES[type] || null;
 };
