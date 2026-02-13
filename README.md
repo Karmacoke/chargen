@@ -1,164 +1,264 @@
-# 🎭 CharGen - AI 角色生成器
+# 🎭 CharGen - AI Character Generator
 
-"输入灵感碎片，锻造完整灵魂。"
+"Input fragments of inspiration, forge complete souls."
 
-CharGen 是一个基于 React 和 AI 大模型（LLM）的智能角色生成工具。它专为作家、漫画家、角色设计师、游戏开发者、TRPG (跑团) 玩家和角色扮演爱好者设计。只需提供简单的关键词或选择世界观，AI 就能为你生成一个有血有肉、细节丰富的角色档案。
+CharGen is an intelligent character generation tool based on React and AI Large Language Models (LLMs). It's designed for writers, comic artists, character designers, game developers, TRPG (tabletop role-playing game) players, and role-playing enthusiasts. Simply provide keywords or select a world setting, and AI will generate a vivid, detail-rich character profile for you.
 
-![CharGen 预览图](./assets/main-page.png)
+![CharGen Preview](./assets/main-page.png)
 
-# ✨ 功能亮点
+## ✨ Key Features
 
-🧠 多模型支持：
+### 🧠 Multi-Model Support
 
-Google Gemini (原生支持，自动识别 AIza 开头 Key)
+- **Google Gemini** (Native support, auto-detects AIza prefix keys)
+- **OpenAI / ChatGPT** (Supports gpt-4o, gpt-3.5, etc.)
+- **Anthropic Claude** (Supports claude-3.5-sonnet, etc.)
+- **Chinese LLMs** (Zhipu ChatGLM, Moonshot Kimi, Tongyi Qwen, etc.)
+- **Local Models** (Ollama, offline operation, privacy-safe)
 
-OpenAI / ChatGPT (支持 gpt-4o, gpt-3.5 等)
+### 🎲 Dual Generation Modes
 
-国产大模型 (DeepSeek、Kimi、通义千问等，通过兼容模式支持)
+- **Custom Mode**: Specify world setting, profession, gender, and keywords for precise customization.
+- **Random Mode**: One-click generation for unexpected inspiration.
 
-本地模型 (Ollama，无需联网，隐私安全)
+### 📝 In-Depth Character Generation
 
-🎲 双重模式：
+- **Basic Profile**: Name, age, race, alignment, occupation.
+- **Psychological Profile**: MBTI personality, core desire, fear, fatal flaw, high concept, quirks.
+- **Appearance Features**: Detailed appearance description and feature list.
+- **Background Story**: Rich life experiences and dark secrets.
 
-定制模式：指定世界观、职业、性别和关键词，精准定制。
+### 🤖 NPC System Prompt
 
-完全随机：一键生成，寻找意外的灵感。
+Automatically generates a System Prompt that can be directly copied into AI conversations (like ChatGPT), allowing AI to instantly roleplay as the character and chat with you.
 
-📝 深度设定生成：
+### 🎨 Visual Studio (Image Prompts)
 
-基础档案：姓名、年龄、种族、阵营、职业。
+Automatically generates English image prompts compatible with Stable Diffusion or Midjourney, supporting 6 professional visual types:
+- Portrait
+- Three Views (Turnaround)
+- Concept Breakdown
+- Expression Sheet
+- Scale Chart
+- Action Poses
 
-心理侧写：MBTI 人格、核心欲望、恐惧、致命弱点。
+### 🌍 Multi-Language Interface
 
-背景故事：详实的生平经历与不可告人的秘密。
+Supports 7 languages: 简体中文, English, Español, Français, Русский, 日本語, 한국어
 
-🤖 NPC 专属指令 (System Prompt)：
+### 🌓 Light/Dark Mode
 
-自动生成一段能够直接复制到 AI 对话（如 ChatGPT）中的 System Prompt，让 AI 立刻扮演该角色与你对话。
+Complete dual-theme support with all UI elements perfectly adapted for a comfortable visual experience.
 
-🎨 绘图咒语 (Image Prompt)：
+---
 
-自动生成适配 Nano Banana Pro; Stable Diffusion 或 Midjourney 的英文绘画提示词。
+## 🚀 Quick Start
 
-🌍 多语言界面：支持简中、英语、日语、韩语等多种语言切换。
+### Online Access
 
-# 🚀 快速开始
+**Visit the GitHub-deployed version directly:**
 
-### 可直接访问本项目在Github上部署的地址：
- [https://karmacoke.github.io/chargen/](https://karmacoke.github.io/chargen/) 立即开始设计你的角色
+👉 [https://karmacoke.github.io/chargen/](https://karmacoke.github.io/chargen/) Start designing your character now!
 
-## 本地运行
+### Local Setup
 
-想要在你的电脑上运行这个项目？请根据你的操作系统选择对应的方案：
+Want to run this project on your computer? Choose the appropriate method for your operating system:
 
-1. 环境准备 (所有系统)
+#### 1. Prerequisites (All Systems)
 
-确保你的电脑上已经安装了以下基础软件：
+Make sure you have the following software installed:
 
-Node.js (推荐下载 LTS 版本)
+- **Node.js** (Recommended: LTS version)
+- **Git** (For downloading the code)
 
-Git (用于下载代码)
+#### 🍎 Option A: macOS Users
 
-### 🍎 方案 A：macOS 用户
+1. **Open Terminal**: Press `Command + Space`, type `Terminal` and press Enter.
 
-打开终端：按 Command + Space (空格键)，输入 Terminal 并回车。
+2. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Karmacoke/chargen.git
+   ```
 
-下载代码：
+3. **Navigate to directory and install dependencies**:
+   ```bash
+   cd my-chargen
+   npm install
+   ```
 
-git clone [https://github.com/Karmacoke/chargen.git](https://github.com/Karmacoke/chargen.git)
+4. **Start the project**:
+   ```bash
+   npm start
+   ```
 
+#### 🪟 Option B: Windows Users
 
-进入目录并安装依赖：
+1. **Open Command Prompt**: Press `Win + R`, type `cmd` or `powershell`, then click OK.
 
-cd my-chargen
-npm install
+2. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Karmacoke/chargen.git
+   ```
 
+3. **Navigate to directory and install dependencies**:
+   ```bash
+   cd my-chargen
+   npm install
+   ```
 
-启动项目：
+4. **Start the project**:
+   ```bash
+   npm start
+   ```
 
-npm start
+After successful startup, your browser will automatically open `http://localhost:3000`, and you can start using it!
 
+---
 
-### 🪟 方案 B：Windows 用户
+## ⚙️ Configuration Guide
 
-打开命令行：按 Win + R 键，输入 cmd 或 powershell，然后点击确定。
+![API Key Settings Panel](./assets/SettingsPanel.png)
 
-下载代码：
+### Important:
 
-git clone [https://github.com/Karmacoke/chargen.git](https://github.com/Karmacoke/chargen.git)
+**Before generating characters, click the gear icon ⚙️ in the top-right corner to configure the model.**
 
+### 1. Using Google Gemini (Recommended)
 
-进入目录并安装依赖：
+- Select **Gemini** model.
+- Enter your API Key starting with `AIza` in the **API Key** field.
+- Fill in the corresponding model name in the **Model Name** field (e.g., `gemini-2.0-flash-exp`, `gemini-2.5-flash`).
 
-cd my-chargen
-npm install
+### 2. Using OpenAI
 
+- Select **OpenAI** model.
+- Enter your API Key starting with `sk-` in the **API Key** field.
+- Fill in the corresponding model name in the **Model Name** field (e.g., `gpt-4o`, `gpt-4o-mini`).
 
-启动项目：
+### 3. Using Anthropic Claude
 
-npm start
+- Select **Claude** model.
+- Enter your Claude API Key in the **API Key** field.
+- Fill in the corresponding model name in the **Model Name** field (e.g., `claude-3-5-sonnet-20241022`).
 
+### 4. Using Chinese LLMs (DeepSeek / Kimi / Qwen, etc.)
 
-启动成功后，浏览器会自动打开 http://localhost:3000
+- Select the corresponding model (**ChatGLM** / **Kimi** / **Qwen**).
+- Enter your API Key in the **API Key** field (usually starts with `sk-`).
+- Fill in the corresponding model name in the **Model Name** field (e.g., `deepseek-chat`, `moonshot-v1-8k`, `qwen-max`).
 
-你就可以开始使用了！
+### 5. Using Local Ollama
 
-# ⚙️ 配置指南
+- Set **AI Provider** to **Local Ollama**.
+- Ensure you have Ollama running locally with `ollama run deepseek-r1` (or other models).
+- Default address is `http://localhost:11434`.
 
-![API Key设置面板](./assets/SettingsPanel.png)
+---
 
-### 必读：
-**开始生成角色之前请点击界面右上角的 齿轮图标 ⚙️ 进行模型配置。**
+## 🛠️ Tech Stack
 
-1. 使用 Google Gemini (推荐)
+- **Framework**: React 19.2.4 (Hooks)
+- **Build Tool**: Create React App 5.0.1
+- **Styling**: Tailwind CSS 3.4.17 (Responsive design, Light/Dark themes)
+- **Icons**: Inline SVG icon library
+- **API Integration**: Fetch API (Streamless)
+- **State Management**: React Hooks + localStorage persistence
+- **Internationalization**: Custom i18n module
 
-选择Gemini模型。
+---
 
-在 API Key 框中输入以 AIza 开头API Key。
+## 📁 Project Structure
 
-在 模型名称 栏填入对应的模型名称（如：gemini-2.5-flash）。
+```
+my-chargen/
+├── public/               # Static assets
+├── src/
+│   ├── components/      # UI components
+│   │   ├── Icons.jsx           # Icon library
+│   │   ├── InputForm.jsx       # Input form
+│   │   ├── ResultDisplay.jsx   # Result display
+│   │   └── SettingsPanel.jsx   # Settings panel
+│   ├── hooks/           # Custom Hooks
+│   │   └── useCharacterGeneration.js  # Core business logic
+│   ├── utils/           # Utility functions
+│   │   ├── apiAdapters.js      # API adapters
+│   │   ├── helpers.js          # Helper functions
+│   │   └── fetchWithTimeout.js # Timeout control
+│   ├── i18n/            # Internationalization
+│   │   └── translations.js     # Multi-language configs
+│   ├── CharacterGenerator.jsx  # Main component
+│   └── index.js         # App entry point
+├── tailwind.config.js   # Tailwind configuration
+└── package.json         # Project configuration
+```
 
-2. 使用 OpenAI
+---
 
-选择OpenAI模型。
+## 🎨 Special Features
 
-在 API Key 框中输入以 sk- 开头API Key。
+### Anti-Cliché System
 
-在 模型名称 栏填入对应的模型名称
+Provides 5 levels of character design styles:
+- **Ordinary (0/4)** - Classic archetypal character
+- **Surprising (1/4)** - Character with small unexpected traits
+- **Memorable (2/4)** - Character with inner contradictions
+- **Unconventional (3/4)** - Character strongly defying expectations
+- **Extreme Rebel (4/4)** - Character completely shattering conventions
 
-3. 使用 DeepSeek / Kimi / 其他模型
+### World Setting Templates
 
-选择对应的模型。
+Supports 7 preset world settings:
+- 🏰 Fantasy
+- 🤖 Cyberpunk
+- 🏙️ Modern Urban
+- 🚀 Space Opera
+- 🧟 Post-Apocalyptic
+- ⚔️ Wuxia/Xianxia
+- 🦑 Lovecraftian Horror
+- ✏️ Custom World Setting
 
-在 API Key 框中输入 API Key（通常也是 sk- 开头）。
+### One-Click Export
 
-在 模型名称 栏填入对应的模型名称 (如 deepseek-chat)。
+- **Markdown Document** - Complete character profile
+- **NPC System Prompt** - Direct use in AI conversations
+- **Image Prompts** - Drawing prompts for 6 visual types
+- **JSON Data** - Structured data for programmatic integration
 
-4. 使用本地 Ollama
+---
 
-将 AI 提供商 选为 Local Ollama。
+## 🤝 Contributing
 
-确保本地已运行 ollama run deepseek-r1 (或其他模型)。
+We welcome Issues and Pull Requests! If you have better Prompt optimization suggestions or new feature ideas, please feel free to share.
 
-默认地址为 http://localhost:11434。
+### How to Contribute
 
-# 🛠️ 技术栈
+1. Fork this repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-框架：React (Hooks)
+---
 
-脚手架：Create React App
+## 📄 License
 
-样式：Tailwind CSS (响应式设计，暗黑模式)
+This project is open-sourced under the **MIT License**. This means you can freely use, modify, and distribute the code.
 
-图标：Lucide React
+---
 
-API 交互：Fetch API (Streamless)
+## 🙏 Acknowledgments
 
+Thanks to all developers who have provided suggestions and contributions to this project!
 
-# 🤝 贡献 (Contributing)
+---
 
-欢迎提交 Issue 或 Pull Request！如果你有更好的 Prompt 优化建议或新功能想法，请随时告诉我。
+## 📞 Contact
 
-# 📄 许可证 (License)
+If you have questions or suggestions, feel free to reach out:
 
-本项目基于 MIT License 开源。这意味着你可以免费使用、修改和分发代码。
+- **GitHub Issues**: [Submit an issue](https://github.com/Karmacoke/chargen/issues)
+- **Project Homepage**: [https://github.com/Karmacoke/chargen](https://github.com/Karmacoke/chargen)
+
+---
+
+**⭐ If this project helps you, please give us a Star!**
